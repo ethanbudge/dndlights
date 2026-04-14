@@ -44,7 +44,7 @@ play_sound <- function(fpath) {
 
   code <- switch(
     os,
-    "Darwin"  = system(paste("afplay", shQuote(fpath), "&"), wait = FALSE),
+    "Darwin"  = system(paste("afplay", shQuote(fpath)), wait = FALSE),
     "Linux"   = {
       # prefer PulseAudio, fall back to ALSA
       if (nchar(Sys.which("paplay")) > 0) {
