@@ -1,0 +1,20 @@
+Package: dndlights
+Title: D&D Spell Sound and Light Effects via LIFX Smart Bulbs
+Version: 0.1.0
+Authors@R: 
+    person("Your", "Name", email = "your@email.com", role = c("aut", "cre"))
+Description: A personal R package for triggering synchronized sound effects
+    and LIFX smart light animations on D&D spell casts. Spells are invoked
+    as R functions and are designed to be bound to hotkeys or voice commands.
+    Requires a LIFX personal access token and a directory of sound effect files.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
+Imports:
+    lifx,
+    tools
+Suggests:
+    usethis
+URL: https://github.com/YOUR_USERNAME/dndlights
+BugReports: https://github.com/YOUR_USERNAME/dndlights/issues
