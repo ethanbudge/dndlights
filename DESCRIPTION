@@ -17,6 +17,8 @@ Imports:
     lifx,
     tools
 Suggests:
+    miniUI,
+    shiny,
     spotifyr,
     usethis
 URL: https://github.com/YOUR_USERNAME/dndlights

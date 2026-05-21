@@ -1,0 +1,4 @@
+Name: dndlights Control Panel
+Description: Open an interactive sidebar with buttons for every dndlights scene, spell, and effect. Requires the shiny and miniUI packages.
+Binding: dnd_addin
+Interactive: true

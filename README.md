@@ -84,6 +84,18 @@ Open `R/scenes.R` and replace each `PLACEHOLDER_*` string with the real Spotify 
 
 ---
 
+## RStudio Control Panel
+
+Install `shiny` and `miniUI`, then open the addin from the **Addins** menu → *dndlights Control Panel* (or bind it to a keyboard shortcut via Tools → Modify Keyboard Shortcuts).
+
+```r
+install.packages(c("shiny", "miniUI"))
+```
+
+The panel opens in the Viewer pane with three tabs — **Scenes**, **Spells**, and **Effects** — and a status bar showing the currently active scene colour. Clicking any button calls the corresponding function directly in your R session.
+
+---
+
 ## Scene control
 
 `cue_scene()` sets the room lighting and starts a Spotify playlist. All subsequent spell and effect functions will revert to that scene's colour when they finish.
