@@ -2,6 +2,14 @@
 # dndlights — Core Helper Functions
 # ==============================================================================
 
+# Internal environment tracking the current ambient lighting state.
+# Updated by cue_scene(); read by revert_state() so spells return to whatever
+# scene was active rather than a fixed neutral.
+.dnd_env <- new.env(parent = emptyenv())
+.dnd_env$color         <- "#E0D4CC"   # default: warm neutral white
+.dnd_env$brightness    <- 0.10
+.dnd_env$spotify_token <- NULL
+
 # ------------------------------------------------------------------------------
 # Internal: resolve sound file path
 # ------------------------------------------------------------------------------
@@ -105,10 +113,12 @@ change_light <- function(color_name = "#ffffff",
 }
 
 
-#' Revert lights to a neutral warm-white state
+#' Revert lights to the current ambient scene state
 #'
-#' Fades the lights back to a soft warm white (`#E0D4CC`) at low brightness —
-#' intended to restore a "room is calm" ambiance after a spell effect completes.
+#' Fades the lights back to the color and brightness that were active when
+#' [cue_scene()] was last called.  If no scene has been set, falls back to a
+#' soft warm white at low brightness.  This is called automatically at the end
+#' of every spell function.
 #'
 #' @param duration Fade duration in seconds. Default `4`.
 #'
@@ -122,8 +132,8 @@ change_light <- function(color_name = "#ffffff",
 #' }
 revert_state <- function(duration = 4) {
   resp <- lifx::lx_color(
-    color_name = "#E0D4CC",
-    brightness = 0.1,
+    color_name = .dnd_env$color,
+    brightness = .dnd_env$brightness,
     duration   = duration
   )
   invisible(resp)
