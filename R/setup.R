@@ -119,16 +119,52 @@ dnd_download_sounds <- function(
 ) {
   # ---- canonical filenames ---------------------------------------------------
   sound_files <- c(
-    fireball         = "fireball.wav",
-    eldritch_blast   = "eldritch_blast.wav",
-    ice_knife        = "ice_knife.wav",
-    shield           = "shield.wav",
-    lightning_bolt   = "lightning_bolt.wav",
-    cure_wounds      = "cure_wounds.wav",
-    firebolt         = "firebolt.wav",
-    prestidigitation = "prestidigitation.wav",
-    water_whip       = "water_whip.wav",
-    magic_missile    = "magic_missile.wav"
+    # Spells (original)
+    fireball             = "fireball.wav",
+    eldritch_blast       = "eldritch_blast.wav",
+    ice_knife            = "ice_knife.wav",
+    shield               = "shield.wav",
+    lightning_bolt       = "lightning_bolt.wav",
+    cure_wounds          = "cure_wounds.wav",
+    firebolt             = "firebolt.wav",
+    prestidigitation     = "prestidigitation.wav",
+    water_whip           = "water_whip.wav",
+    magic_missile        = "magic_missile.wav",
+    # Spells (expanded)
+    light                = "light.wav",
+    mage_armor           = "mage_armor.wav",
+    misty_step           = "misty_step.wav",
+    private_sanctum      = "private_sanctum.wav",
+    booming_blade        = "booming_blade.wav",
+    disguise_self        = "disguise_self.wav",
+    haste                = "haste.wav",
+    acid_splash          = "acid_splash.wav",
+    heat_metal           = "heat_metal.wav",
+    faerie_fire          = "faerie_fire.wav",
+    ray_of_frost         = "ray_of_frost.wav",
+    wall_of_fire         = "wall_of_fire.wav",
+    finger_of_death      = "finger_of_death.wav",
+    disintegrate         = "disintegrate.wav",
+    blight               = "blight.wav",
+    mass_healing_word    = "mass_healing_word.wav",
+    # Non-spell effects
+    hammer_slam          = "hammer_slam.wav",
+    arcane_shot          = "arcane_shot.wav",
+    ignite               = "ignite.wav",
+    gust                 = "gust.wav",
+    wild_shape           = "wild_shape.wav",
+    spider_bite          = "spider_bite.wav",
+    worm_surge           = "worm_surge.wav",
+    spore_burst          = "spore_burst.wav",
+    flask_shatter        = "flask_shatter.wav",
+    steam_blast          = "steam_blast.wav",
+    crystal_breath       = "crystal_breath.wav",
+    dragon_bite          = "dragon_bite.wav",
+    arcane_surge         = "arcane_surge.wav",
+    sand_blast           = "sand_blast.wav",
+    bludgeon             = "bludgeon.wav",
+    slash                = "slash.wav",
+    pierce               = "pierce.wav"
   )
 
   # ---- ensure destination exists --------------------------------------------
