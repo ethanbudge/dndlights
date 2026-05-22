@@ -46,16 +46,24 @@ LIFX_TOKEN=your_lifx_token_here
 
 ### 2. Spotify credentials
 
-Playback control requires the **Authorization Code** OAuth flow (not Client Credentials — those tokens lack the `user-modify-playback-state` scope and will be silently rejected by Spotify's player endpoints).
+#### 2a. Spotify Developer Dashboard
 
-Add your app credentials to `.Renviron` (open with `usethis::edit_r_environ()`):
+1. Open your app at <https://developer.spotify.com/dashboard>.
+2. Go to **Edit Settings → Redirect URIs**.
+3. Add exactly: `http://127.0.0.1:1410/` (with trailing slash).
+
+> **Why?** Spotify banned the hostname `localhost` in redirect URIs in April 2025. The R `httr` package listens on port 1410 by default; it must be reached via the IP literal `127.0.0.1`, not the string `localhost`.
+
+#### 2b. R credentials
+
+Add your app's Client ID and Secret to `.Renviron` (open with `usethis::edit_r_environ()`):
 
 ```
 SPOTIFY_CLIENT_ID=your_client_id
 SPOTIFY_CLIENT_SECRET=your_client_secret
 ```
 
-The first time `cue_scene()` is called it will open a browser tab for Spotify's consent screen. After you approve, the token is cached in `~/.httr-oauth` and all subsequent calls — including across R sessions — are silent. No manual token-passing is needed.
+The first time `cue_scene()` is called a browser tab opens for Spotify's consent screen. After you approve, the token (including a refresh token) is cached in `~/.httr-oauth`. All subsequent calls — including across R sessions — are silent and automatic.
 
 ### 3. Sound effects
 
