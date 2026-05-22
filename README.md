@@ -236,15 +236,13 @@ Each spell plays a sound, runs a smooth light sequence, then reverts to the acti
 
 ### PC combat
 
-Voice-bindable via RStudio addins (Tools → Modify Keyboard Shortcuts → search the French trigger). Triggers are historical French battle commands. The panel's built-in JS shortcuts cover spells only; bind these manually to your preferred key combos.
-
-| Function | Effect | French trigger |
-|---|---|---|
-| `arcane_shot()` | Arcane rifle firing | *Décharge* |
-| `wild_shape()` | Druidic transformation into a beast | *Sauvagine* |
-| `bludgeon()` | Bludgeoning impact frame | *Boutez* |
-| `slash()` | Slashing impact frame | *Taillade* |
-| `pierce()` | Piercing impact frame | *Estoc* |
+| Function | Effect | French trigger | Panel shortcut |
+|---|---|---|---|
+| `arcane_shot()` | Arcane rifle firing | *Décharge* | ⌃⇧1 |
+| `wild_shape()` | Druidic transformation into a beast | *Sauvagine* | ⌃⇧2 |
+| `bludgeon()` | Bludgeoning impact frame | *Boutez* | ⌃⇧3 |
+| `slash()` | Slashing impact frame | *Taillade* | ⌃⇧4 |
+| `pierce()` | Piercing impact frame | *Estoc* | ⌃⇧5 |
 
 ### Creatures
 
@@ -281,17 +279,17 @@ French voice triggers solve a real problem at the table: if you bind hotwords to
 Every spell and PC-combat effect is registered as an RStudio addin, so each one can be bound to a keyboard shortcut and then triggered by a voice phrase that types that shortcut.
 
 1. **Install / reinstall** the package so RStudio picks up the addin registry: `devtools::install_github("ethanbudge/dndlights")` then restart RStudio.
-2. **Bind shortcuts**: Tools → Modify Keyboard Shortcuts → search for the spell (e.g. `Fireball`) or its French trigger (`Boule de feu`) → assign a key combo matching the Panel shortcut column above (e.g. ⌘⌥1 for Fireball).
+2. **Bind shortcuts**: Tools → Modify Keyboard Shortcuts → search for the spell or effect (e.g. `Fireball` or `Boule de feu`) → assign the key combo from the Panel shortcut column above (e.g. ⌘⌥1 for Fireball, ⌃⇧3 for Bludgeon).
 3. **Map voice → keystroke**: System Settings → Accessibility → Voice Control → Commands → `+` → set the phrase (e.g. `Boule de feu`) to "Press keyboard shortcut" → record ⌘⌥1.
 
 Now speaking the French phrase will press the shortcut, which fires the spell.
 
 **Two ways to play:**
 
-- **Panel open** — the panel captures ⌘⌥, ⌘⌃, and ⌃⌥ shortcuts directly via JavaScript and dispatches the spell without involving RStudio's addin system. Voice Control presses the key combo → the Shiny webview intercepts it → the spell fires. A brief on-screen flash confirms which spell triggered.
+- **Panel open** — the panel captures ⌘⌥, ⌘⌃, ⌃⌥, and ⌃⇧ shortcuts directly via JavaScript and dispatches the spell or effect without involving RStudio's addin system. Voice Control presses the key combo → the Shiny webview intercepts it → the function fires. A brief on-screen flash confirms which spell triggered.
 - **Panel closed** — RStudio's addin system handles the shortcut normally, calling the function directly in the console.
 
-> **Note:** RStudio keyboard shortcuts bound to individual spell addins **do not fire while the panel is open** — the R session is inside Shiny's event loop. The panel's built-in JS shortcuts (⌘⌥, ⌘⌃, ⌃⌥) are the workaround for this. PC combat effects are not included in the JS shortcuts; bind those via RStudio and use them with the panel closed.
+> **Note:** RStudio keyboard shortcuts bound to individual spell addins **do not fire while the panel is open** — the R session is inside Shiny's event loop. The panel's built-in JS shortcuts (⌘⌥, ⌘⌃, ⌃⌥, ⌃⇧) are the workaround for this.
 
 You can also use any other hotword engine (Whisper, Picovoice, push-to-talk macros, etc.) — just have it call the R function directly or press the bound shortcut.
 
