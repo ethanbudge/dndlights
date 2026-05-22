@@ -18,12 +18,20 @@
 #' Launch from the RStudio **Addins** menu → *dndlights Control Panel*, or
 #' bind it to a keyboard shortcut via Tools → Modify Keyboard Shortcuts.
 #'
-#' **Concurrency note for voice-command users:** while this panel is open
-#' the R session is locked inside Shiny's event loop, so keyboard shortcuts
-#' bound to other dndlights addins (e.g. `fireball`, `slash`) will not fire
-#' — RStudio queues the shortcut but the R session cannot execute it until
-#' the panel closes.  For live voice-command play, keep the panel closed
-#' and trigger spells via shortcuts directly.
+#' **Keyboard shortcuts (voice-command mode):** the panel captures modifier+digit
+#' combos directly via JavaScript, so macOS Voice Control can fire spells
+#' while the panel is open:
+#'
+#' | Keys | Spells |
+#' |------|--------|
+#' | Cmd+Option+1–9 | fireball … booming_blade |
+#' | Cmd+Control+1–9 | water_whip … mass_healing_word |
+#' | Control+Option+1–8 | haste … misty_step |
+#'
+#' **Concurrency note:** RStudio keyboard shortcuts bound to individual spell
+#' addins (Tools → Modify Keyboard Shortcuts) will *not* fire while the panel
+#' is open — the R session is inside Shiny's event loop and cannot process them.
+#' Use the JS shortcuts above (or close the panel) for voice-command play.
 #'
 #' @return Called for side effects. Blocks the R console until the panel is
 #'   closed.
@@ -128,29 +136,80 @@ dnd_addin <- function() {
   # ---- UI --------------------------------------------------------------------
 
   ui <- miniUI::miniPage(
-    shiny::tags$head(shiny::tags$style(shiny::HTML("
-      body, html {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      }
-      .gadget-title { background: #12122A; color: #fff; }
-      .status-row {
-        background: #1A1A30; color: #ccc;
-        padding: 4px 10px; font-size: 11px;
-        display: flex; align-items: center; gap: 7px;
-        border-bottom: 1px solid #2A2A45;
-      }
-      .scene-dot {
-        width: 10px; height: 10px;
-        border-radius: 50%; flex-shrink: 0;
-      }
-      .mini-layout.padding { padding: 6px 8px; }
-    "))),
+    shiny::tags$head(
+      shiny::tags$style(shiny::HTML("
+        body, html {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        .gadget-title { background: #12122A; color: #fff; }
+        .status-row {
+          background: #1A1A30; color: #ccc;
+          padding: 4px 10px; font-size: 11px;
+          display: flex; align-items: center; gap: 7px;
+          border-bottom: 1px solid #2A2A45;
+        }
+        .scene-dot {
+          width: 10px; height: 10px;
+          border-radius: 50%; flex-shrink: 0;
+        }
+        .mini-layout.padding { padding: 6px 8px; }
+        #spell-flash {
+          position: fixed; top: 28px; right: 8px;
+          background: rgba(255,255,255,0.15); color: #fff;
+          font-size: 10px; padding: 2px 6px; border-radius: 3px;
+          opacity: 0; transition: opacity 0.15s;
+          pointer-events: none; z-index: 9999;
+        }
+        #spell-flash.show { opacity: 1; }
+      ")),
+      shiny::tags$script(shiny::HTML("
+        // Keyboard shortcut maps (Cmd+Option+1-9, Cmd+Ctrl+1-9, Ctrl+Option+1-8)
+        var KM_CMD_OPT  = ['fireball','eldritch_blast','ice_knife','lightning_bolt',
+                           'firebolt','magic_missile','acid_splash','ray_of_frost',
+                           'booming_blade'];
+        var KM_CMD_CTRL = ['water_whip','heat_metal','wall_of_fire','faerie_fire',
+                           'blight','finger_of_death','disintegrate','cure_wounds',
+                           'mass_healing_word'];
+        var KM_CTRL_OPT = ['haste','light','shield','mage_armor','private_sanctum',
+                           'prestidigitation','disguise_self','misty_step'];
+
+        var _flashTimer = null;
+        function flashSpell(name) {
+          var el = document.getElementById('spell-flash');
+          if (!el) return;
+          el.textContent = name.replace(/_/g, ' ');
+          el.classList.add('show');
+          clearTimeout(_flashTimer);
+          _flashTimer = setTimeout(function() { el.classList.remove('show'); }, 900);
+        }
+
+        document.addEventListener('keydown', function(e) {
+          if (e.repeat) return;
+          var spell = null;
+          var digit = parseInt(e.key, 10);
+          if (e.metaKey && e.altKey && !e.ctrlKey && digit >= 1 && digit <= 9)
+            spell = KM_CMD_OPT[digit - 1];
+          else if (e.metaKey && e.ctrlKey && !e.altKey && digit >= 1 && digit <= 9)
+            spell = KM_CMD_CTRL[digit - 1];
+          else if (e.ctrlKey && e.altKey && !e.metaKey && digit >= 1 && digit <= 8)
+            spell = KM_CTRL_OPT[digit - 1];
+          if (spell) {
+            e.preventDefault();
+            flashSpell(spell);
+            Shiny.setInputValue('spell_key', spell, {priority: 'event'});
+          }
+        });
+      "))
+    ),
 
     miniUI::gadgetTitleBar(
       "dndlights",
       left  = NULL,
       right = miniUI::miniTitleBarButton("close_btn", "Close", primary = FALSE)
     ),
+
+    # Keystroke feedback overlay (fades in/out via JS)
+    shiny::tags$div(id = "spell-flash"),
 
     # Live scene indicator
     shiny::uiOutput("status_row"),
@@ -287,6 +346,16 @@ dnd_addin <- function() {
         }, ignoreInit = TRUE)
       })
     }
+
+    # JS keystroke dispatch — fires spells while the panel is open
+    shiny::observeEvent(input$spell_key, {
+      fn_name <- input$spell_key
+      fn <- tryCatch(
+        get(fn_name, envir = asNamespace("dndlights"), inherits = FALSE),
+        error = function(e) NULL
+      )
+      if (!is.null(fn)) fn()
+    }, ignoreInit = TRUE, ignoreNULL = TRUE)
 
     shiny::observeEvent(input$close_btn, shiny::stopApp())
   }
