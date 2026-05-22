@@ -176,59 +176,59 @@ Each spell plays a sound, runs a smooth light sequence, then reverts to the acti
 
 ### Offensive
 
-| Function | Spell | French trigger |
-|---|---|---|
-| `fireball()` | Fireball | *Boule de feu* |
-| `eldritch_blast()` | Eldritch Blast | *Funeste* |
-| `ice_knife()` | Ice Knife | *Givre* |
-| `lightning_bolt()` | Lightning Bolt | *Foudre* |
-| `firebolt()` | Firebolt | *Étincelle* |
-| `magic_missile()` | Magic Missile | *Carreau* |
-| `acid_splash()` | Acid Splash | *Acerbe* |
-| `ray_of_frost()` | Ray of Frost | *Verglas* |
-| `booming_blade()` | Booming Blade | *Grondement* |
+| Function | Spell | French trigger | Panel shortcut |
+|---|---|---|---|
+| `fireball()` | Fireball | *Boule de feu* | ⌘⌥1 |
+| `eldritch_blast()` | Eldritch Blast | *Funeste* | ⌘⌥2 |
+| `ice_knife()` | Ice Knife | *Givre* | ⌘⌥3 |
+| `lightning_bolt()` | Lightning Bolt | *Foudre* | ⌘⌥4 |
+| `firebolt()` | Firebolt | *Étincelle* | ⌘⌥5 |
+| `magic_missile()` | Magic Missile | *Carreau* | ⌘⌥6 |
+| `acid_splash()` | Acid Splash | *Acerbe* | ⌘⌥7 |
+| `ray_of_frost()` | Ray of Frost | *Verglas* | ⌘⌥8 |
+| `booming_blade()` | Booming Blade | *Grondement* | ⌘⌥9 |
 
 ### Elemental
 
-| Function | Spell | French trigger |
-|---|---|---|
-| `water_whip()` | Water Whip | *Fouet* |
-| `heat_metal()` | Heat Metal | *Brasier* |
-| `wall_of_fire()` | Wall of Fire | *Fournaise* |
-| `faerie_fire()` | Faerie Fire | *Féerie* |
+| Function | Spell | French trigger | Panel shortcut |
+|---|---|---|---|
+| `water_whip()` | Water Whip | *Fouet* | ⌘⌃1 |
+| `heat_metal()` | Heat Metal | *Brasier* | ⌘⌃2 |
+| `wall_of_fire()` | Wall of Fire | *Fournaise* | ⌘⌃3 |
+| `faerie_fire()` | Faerie Fire | *Féerie* | ⌘⌃4 |
 
 ### Necrotic
 
-| Function | Spell | French trigger |
-|---|---|---|
-| `blight()` | Blight | *Flétrissure* |
-| `finger_of_death()` | Finger of Death | *Trépas* |
-| `disintegrate()` | Disintegrate | *Néant* |
+| Function | Spell | French trigger | Panel shortcut |
+|---|---|---|---|
+| `blight()` | Blight | *Flétrissure* | ⌘⌃5 |
+| `finger_of_death()` | Finger of Death | *Trépas* | ⌘⌃6 |
+| `disintegrate()` | Disintegrate | *Néant* | ⌘⌃7 |
 
 ### Healing & support
 
-| Function | Spell | French trigger |
-|---|---|---|
-| `cure_wounds()` | Cure Wounds | *Guérison* |
-| `mass_healing_word()` | Mass Healing Word | *Cantique* |
-| `haste()` | Haste | *Véloce* |
-| `light()` | Light | *Lueur* |
+| Function | Spell | French trigger | Panel shortcut |
+|---|---|---|---|
+| `cure_wounds()` | Cure Wounds | *Guérison* | ⌘⌃8 |
+| `mass_healing_word()` | Mass Healing Word | *Cantique* | ⌘⌃9 |
+| `haste()` | Haste | *Véloce* | ⌃⌥1 |
+| `light()` | Light | *Lueur* | ⌃⌥2 |
 
 ### Defense
 
-| Function | Spell | French trigger |
-|---|---|---|
-| `shield()` | Shield | *Bouclier* |
-| `mage_armor()` | Mage Armor | *Égide* |
-| `private_sanctum()` | Mordenkainen's Private Sanctum | *Citadelle* |
+| Function | Spell | French trigger | Panel shortcut |
+|---|---|---|---|
+| `shield()` | Shield | *Bouclier* | ⌃⌥3 |
+| `mage_armor()` | Mage Armor | *Égide* | ⌃⌥4 |
+| `private_sanctum()` | Mordenkainen's Private Sanctum | *Citadelle* | ⌃⌥5 |
 
 ### Utility
 
-| Function | Spell | French trigger |
-|---|---|---|
-| `prestidigitation()` | Prestidigitation | *Sortilège* |
-| `disguise_self()` | Disguise Self | *Frimousse* |
-| `misty_step()` | Misty Step | *Brume* |
+| Function | Spell | French trigger | Panel shortcut |
+|---|---|---|---|
+| `prestidigitation()` | Prestidigitation | *Sortilège* | ⌃⌥6 |
+| `disguise_self()` | Disguise Self | *Frimousse* | ⌃⌥7 |
+| `misty_step()` | Misty Step | *Brume* | ⌃⌥8 |
 
 ---
 
@@ -236,7 +236,7 @@ Each spell plays a sound, runs a smooth light sequence, then reverts to the acti
 
 ### PC combat
 
-Voice-bindable like spells. Triggers are historical French battle commands.
+Voice-bindable via RStudio addins (Tools → Modify Keyboard Shortcuts → search the French trigger). Triggers are historical French battle commands. The panel's built-in JS shortcuts cover spells only; bind these manually to your preferred key combos.
 
 | Function | Effect | French trigger |
 |---|---|---|
@@ -281,12 +281,17 @@ French voice triggers solve a real problem at the table: if you bind hotwords to
 Every spell and PC-combat effect is registered as an RStudio addin, so each one can be bound to a keyboard shortcut and then triggered by a voice phrase that types that shortcut.
 
 1. **Install / reinstall** the package so RStudio picks up the addin registry: `devtools::install_github("ethanbudge/dndlights")` then restart RStudio.
-2. **Bind shortcuts**: Tools → Modify Keyboard Shortcuts → search for the spell (e.g. `Fireball`) or its French trigger (`Boule de feu`) → assign a key combo (e.g. `Cmd+Alt+1`).
-3. **Map voice → keystroke**: System Settings → Accessibility → Voice Control → Commands → `+` → set the phrase (e.g. `Boule de feu`) to "Press keyboard shortcut" → record `Cmd+Alt+1`.
+2. **Bind shortcuts**: Tools → Modify Keyboard Shortcuts → search for the spell (e.g. `Fireball`) or its French trigger (`Boule de feu`) → assign a key combo matching the Panel shortcut column above (e.g. ⌘⌥1 for Fireball).
+3. **Map voice → keystroke**: System Settings → Accessibility → Voice Control → Commands → `+` → set the phrase (e.g. `Boule de feu`) to "Press keyboard shortcut" → record ⌘⌥1.
 
-Now speaking the French phrase will press the shortcut, which fires the addin, which runs the spell.
+Now speaking the French phrase will press the shortcut, which fires the spell.
 
-> **Important — do not have the dndlights Control Panel open while using voice/keyboard triggers.** The panel is a blocking Shiny gadget, so while it is open the R session is busy and any keyboard-shortcut addin you trigger will be queued but will not execute until you close the panel. Use the panel for manual play and rehearsal; close it before live voice play.
+**Two ways to play:**
+
+- **Panel open** — the panel captures ⌘⌥, ⌘⌃, and ⌃⌥ shortcuts directly via JavaScript and dispatches the spell without involving RStudio's addin system. Voice Control presses the key combo → the Shiny webview intercepts it → the spell fires. A brief on-screen flash confirms which spell triggered.
+- **Panel closed** — RStudio's addin system handles the shortcut normally, calling the function directly in the console.
+
+> **Note:** RStudio keyboard shortcuts bound to individual spell addins **do not fire while the panel is open** — the R session is inside Shiny's event loop. The panel's built-in JS shortcuts (⌘⌥, ⌘⌃, ⌃⌥) are the workaround for this. PC combat effects are not included in the JS shortcuts; bind those via RStudio and use them with the panel closed.
 
 You can also use any other hotword engine (Whisper, Picovoice, push-to-talk macros, etc.) — just have it call the R function directly or press the bound shortcut.
 
