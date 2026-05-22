@@ -68,31 +68,37 @@ dnd_addin <- function() {
 
   # ---- Data: groupings -------------------------------------------------------
 
-  scenes_outdoor <- c(
-    "ironbottom_riots", "ironbottom_neutral", "ironbottom_night",
-    "base_1", "base_3", "combat_4", "victory"
-  )
-  scenes_indoor <- c(
+  # Scenes ---------------------------------------------------------------
+  scenes_urban <- c(
     "dueling_club", "noble_house", "detective_office", "curio_shop",
-    "newspaper", "tavern", "ballroom", "dream_sequence", "base_2", "base_4"
+    "newspaper", "tavern", "ballroom"
   )
-  scenes_combat <- c("combat_1", "mine", "combat_2", "factory", "combat_3")
+  scenes_outdoors <- c(
+    "ironbottom_riots", "ironbottom_neutral", "ironbottom_night",
+    "mine", "factory", "dream_sequence"
+  )
+  scenes_combat <- c("combat_1", "combat_2", "combat_3", "combat_4", "victory")
+  scenes_ambient <- c("base_1", "base_2", "base_3", "base_4")
 
-  spells_orig <- c(
-    "fireball", "eldritch_blast", "ice_knife", "shield", "lightning_bolt",
-    "cure_wounds", "firebolt", "prestidigitation", "water_whip", "magic_missile"
+  # Spells ---------------------------------------------------------------
+  spells_offensive <- c(
+    "fireball", "eldritch_blast", "ice_knife", "lightning_bolt",
+    "firebolt", "magic_missile", "acid_splash", "ray_of_frost", "booming_blade"
   )
-  spells_exp <- c(
-    "light", "mage_armor", "misty_step", "private_sanctum", "booming_blade",
-    "disguise_self", "haste", "acid_splash", "heat_metal", "faerie_fire",
-    "ray_of_frost", "wall_of_fire", "finger_of_death", "disintegrate",
-    "blight", "mass_healing_word"
+  spells_elemental <- c("water_whip", "heat_metal", "wall_of_fire", "faerie_fire")
+  spells_necrotic  <- c("blight", "finger_of_death", "disintegrate")
+  spells_healing   <- c("cure_wounds", "mass_healing_word", "haste", "light")
+  spells_defense   <- c("shield", "mage_armor", "private_sanctum")
+  spells_utility   <- c("prestidigitation", "disguise_self", "misty_step")
+
+  # Effects --------------------------------------------------------------
+  effects_physical  <- c("bludgeon", "slash", "pierce")
+  effects_creatures <- c(
+    "spider_bite", "dragon_bite", "worm_surge", "crystal_breath", "wild_shape"
   )
-  effects <- c(
-    "hammer_slam", "arcane_shot", "ignite", "gust", "wild_shape",
-    "spider_bite", "worm_surge", "spore_burst", "flask_shatter",
-    "steam_blast", "crystal_breath", "dragon_bite", "arcane_surge",
-    "sand_blast", "bludgeon", "slash", "pierce"
+  effects_magical <- c(
+    "hammer_slam", "arcane_shot", "arcane_surge", "ignite",
+    "gust", "sand_blast", "steam_blast", "spore_burst", "flask_shatter"
   )
 
   # Darkened scene colours — readable with white text
@@ -146,16 +152,20 @@ dnd_addin <- function() {
       miniUI::miniTabPanel(
         "Scenes", icon = shiny::icon("map"),
         miniUI::miniContentPanel(
-          sec_head("Outdoor / Canyon"),
-          btn_grid(lapply(scenes_outdoor, function(s)
+          sec_head("Indoor Locations"),
+          btn_grid(lapply(scenes_urban, function(s)
             panel_btn(paste0("sc_", s), pretty_label(s), bg = SCENE_BG[[s]])
           )),
-          sec_head("Indoor Spaces"),
-          btn_grid(lapply(scenes_indoor, function(s)
+          sec_head("Outdoor & Depths"),
+          btn_grid(lapply(scenes_outdoors, function(s)
             panel_btn(paste0("sc_", s), pretty_label(s), bg = SCENE_BG[[s]])
           )),
           sec_head("Combat"),
           btn_grid(lapply(scenes_combat, function(s)
+            panel_btn(paste0("sc_", s), pretty_label(s), bg = SCENE_BG[[s]])
+          )),
+          sec_head("Ambient"),
+          btn_grid(lapply(scenes_ambient, function(s)
             panel_btn(paste0("sc_", s), pretty_label(s), bg = SCENE_BG[[s]])
           ))
         )
@@ -165,13 +175,29 @@ dnd_addin <- function() {
       miniUI::miniTabPanel(
         "Spells", icon = shiny::icon("magic"),
         miniUI::miniContentPanel(
-          sec_head("Original"),
-          btn_grid(lapply(spells_orig, function(s)
-            panel_btn(paste0("sp_", s), pretty_label(s), bg = "#5B3A8A")
+          sec_head("Offensive"),
+          btn_grid(lapply(spells_offensive, function(s)
+            panel_btn(paste0("sp_", s), pretty_label(s), bg = "#5B2A6A")
           )),
-          sec_head("Expanded"),
-          btn_grid(lapply(spells_exp, function(s)
-            panel_btn(paste0("sp_", s), pretty_label(s), bg = "#2D4E8A")
+          sec_head("Elemental"),
+          btn_grid(lapply(spells_elemental, function(s)
+            panel_btn(paste0("sp_", s), pretty_label(s), bg = "#7A3518")
+          )),
+          sec_head("Necrotic"),
+          btn_grid(lapply(spells_necrotic, function(s)
+            panel_btn(paste0("sp_", s), pretty_label(s), bg = "#2A1535")
+          )),
+          sec_head("Healing & Support"),
+          btn_grid(lapply(spells_healing, function(s)
+            panel_btn(paste0("sp_", s), pretty_label(s), bg = "#1A5C38")
+          )),
+          sec_head("Defense"),
+          btn_grid(lapply(spells_defense, function(s)
+            panel_btn(paste0("sp_", s), pretty_label(s), bg = "#1C3C60")
+          )),
+          sec_head("Utility"),
+          btn_grid(lapply(spells_utility, function(s)
+            panel_btn(paste0("sp_", s), pretty_label(s), bg = "#3C3A6A")
           ))
         )
       ),
@@ -180,8 +206,16 @@ dnd_addin <- function() {
       miniUI::miniTabPanel(
         "Effects", icon = shiny::icon("bolt"),
         miniUI::miniContentPanel(
-          sec_head("Combat & Creatures"),
-          btn_grid(lapply(effects, function(s)
+          sec_head("Physical"),
+          btn_grid(lapply(effects_physical, function(s)
+            panel_btn(paste0("ef_", s), pretty_label(s), bg = "#4A2A10")
+          )),
+          sec_head("Creatures"),
+          btn_grid(lapply(effects_creatures, function(s)
+            panel_btn(paste0("ef_", s), pretty_label(s), bg = "#3A1A1A")
+          )),
+          sec_head("Magical & Environmental"),
+          btn_grid(lapply(effects_magical, function(s)
             panel_btn(paste0("ef_", s), pretty_label(s), bg = "#1D5C40")
           ))
         )
@@ -209,7 +243,7 @@ dnd_addin <- function() {
     })
 
     # Scene buttons — use local() to capture loop variable by value
-    all_scenes <- c(scenes_outdoor, scenes_indoor, scenes_combat)
+    all_scenes <- c(scenes_urban, scenes_outdoors, scenes_combat, scenes_ambient)
     for (s in all_scenes) {
       local({
         sc <- s
@@ -221,7 +255,9 @@ dnd_addin <- function() {
     }
 
     # Spell buttons
-    for (sp in c(spells_orig, spells_exp)) {
+    all_spells <- c(spells_offensive, spells_elemental, spells_necrotic,
+                    spells_healing, spells_defense, spells_utility)
+    for (sp in all_spells) {
       local({
         fn_name <- sp
         shiny::observeEvent(input[[paste0("sp_", fn_name)]], {
@@ -232,7 +268,8 @@ dnd_addin <- function() {
     }
 
     # Effect buttons
-    for (ef in effects) {
+    all_effects <- c(effects_physical, effects_creatures, effects_magical)
+    for (ef in all_effects) {
       local({
         fn_name <- ef
         shiny::observeEvent(input[[paste0("ef_", fn_name)]], {
