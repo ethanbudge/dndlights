@@ -164,108 +164,28 @@
 )
 
 
-# ------------------------------------------------------------------------------
-# Spotify token management
-# ------------------------------------------------------------------------------
-
-#' Set your Spotify access token
-#'
-#' Saves a Spotify access token for the current R session so that [cue_scene()]
-#' can control playback.  The token must have the
-#' `user-modify-playback-state` scope.
-#'
-#' **Obtaining a token:**
-#' The easiest route is `spotifyr::get_spotify_authorization_code()`.  Set
-#' `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET` in your `.Renviron` file,
-#' then call:
-#' ```r
-#' tok <- spotifyr::get_spotify_authorization_code(
-#'   scope = "user-modify-playback-state"
-#' )
-#' dnd_set_spotify_token(tok$credentials$access_token)
-#' ```
-#'
-#' Alternatively, copy a token directly from the
-#' [Spotify Developer Console](https://developer.spotify.com/console/put-play/).
-#'
-#' For the token to persist across sessions, add
-#' `SPOTIFY_ACCESS_TOKEN=<your_token>` to your `.Renviron` file
-#' (see `usethis::edit_r_environ()`). Note that Spotify access tokens expire
-#' after one hour and must be refreshed.
-#'
-#' @param token A character string containing a valid Spotify access token.
-#'
-#' @return Invisibly returns `TRUE` on success.
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' dnd_set_spotify_token("BQC...")
-#' }
-dnd_set_spotify_token <- function(token) {
-  if (!is.character(token) || nchar(trimws(token)) == 0) {
-    stop("Token must be a non-empty character string.")
-  }
-  .dnd_env$spotify_token <- token
-  message(
-    "Spotify token set for this session.\n",
-    "Note: Spotify access tokens expire after one hour.\n",
-    "To persist the token, add SPOTIFY_ACCESS_TOKEN=<token> to your .Renviron file.\n",
-    "Run `usethis::edit_r_environ()` to open it."
-  )
-  invisible(TRUE)
-}
-
-
-# Internal: retrieve stored Spotify access token.
-.get_spotify_token <- function() {
-  token <- .dnd_env$spotify_token
-  if (!is.null(token) && nchar(token) > 0) return(token)
-
-  token <- Sys.getenv("SPOTIFY_ACCESS_TOKEN")
-  if (nchar(token) > 0) return(token)
-
-  stop(
-    "Spotify access token not found.\n",
-    "Call dnd_set_spotify_token() with a valid access token, or add\n",
-    "SPOTIFY_ACCESS_TOKEN=<token> to your .Renviron file.\n",
-    "The token needs the 'user-modify-playback-state' scope.\n",
-    "Obtain one via:\n",
-    "  spotifyr::get_spotify_authorization_code(scope = \"user-modify-playback-state\")\n",
-    "or from the Spotify Developer Console."
-  )
-}
-
-
 # Internal: start a playlist from its first track, disable shuffle,
 # and set repeat mode to 'context' (loops the whole playlist).
-.spotify_cue_playlist <- function(playlist_uri, token) {
-  auth  <- httr::add_headers(Authorization = paste("Bearer", token))
-  ctype <- httr::content_type_json()
+# Requires SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET to be set in the
+# environment so spotifyr::get_spotify_access_token() can authenticate.
+.spotify_cue_playlist <- function(playlist_uri) {
+  token <- spotifyr::get_spotify_access_token()
 
-  httr::PUT(
-    "https://api.spotify.com/v1/me/player/play",
-    auth, ctype,
-    body = jsonlite::toJSON(
-      list(
-        context_uri = playlist_uri,
-        offset      = list(position = 0L),
-        position_ms = 0L
-      ),
-      auto_unbox = TRUE
-    )
+  spotifyr::start_my_playback(
+    context_uri   = playlist_uri,
+    offset        = list(position = 0L),
+    position_ms   = 0L,
+    authorization = token
   )
 
-  httr::PUT(
-    "https://api.spotify.com/v1/me/player/shuffle",
-    auth,
-    query = list(state = "false")
+  spotifyr::toggle_my_shuffle(
+    state         = FALSE,
+    authorization = token
   )
 
-  httr::PUT(
-    "https://api.spotify.com/v1/me/player/repeat",
-    auth,
-    query = list(state = "context")
+  spotifyr::set_my_repeat_mode(
+    state         = "context",
+    authorization = token
   )
 
   invisible(NULL)
@@ -285,8 +205,9 @@ dnd_set_spotify_token <- function(token) {
 #' After this call, all spell functions will fade back to this scene's lighting
 #' when they finish (via [revert_state()]).
 #'
-#' A Spotify access token with the `user-modify-playback-state` scope must be
-#' set before calling this function — see [dnd_set_spotify_token()].
+#' Requires `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET` to be set in your
+#' environment (e.g. via `Sys.setenv()` or `.Renviron`) so that
+#' `spotifyr::get_spotify_access_token()` can authenticate.
 #'
 #' Edit the playlist URI placeholders in `R/scenes.R` (`.scene_defs`) to point
 #' to your actual Spotify playlists before use.
@@ -328,8 +249,7 @@ cue_scene <- function(scene) {
   .dnd_env$brightness <- s$brightness
 
   # Start the Spotify playlist
-  token <- .get_spotify_token()
-  .spotify_cue_playlist(s$playlist, token)
+  .spotify_cue_playlist(s$playlist)
 
   invisible(NULL)
 }
