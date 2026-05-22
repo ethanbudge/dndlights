@@ -276,7 +276,19 @@ No voice triggers — bind to hotkeys or call manually as the DM.
 
 French voice triggers solve a real problem at the table: if you bind hotwords to English spell names ("fireball", "lightning"), they fire constantly during normal play. The French triggers are deliberately chosen so that **nothing said in English at a D&D table will phonetically trigger them**.
 
-Bind each trigger word to its R function using a hotword engine (Whisper, Picovoice, push-to-talk macros, etc.).
+### Setup (macOS Voice Control → RStudio shortcut path)
+
+Every spell and PC-combat effect is registered as an RStudio addin, so each one can be bound to a keyboard shortcut and then triggered by a voice phrase that types that shortcut.
+
+1. **Install / reinstall** the package so RStudio picks up the addin registry: `devtools::install_github("ethanbudge/dndlights")` then restart RStudio.
+2. **Bind shortcuts**: Tools → Modify Keyboard Shortcuts → search for the spell (e.g. `Fireball`) or its French trigger (`Boule de feu`) → assign a key combo (e.g. `Cmd+Alt+1`).
+3. **Map voice → keystroke**: System Settings → Accessibility → Voice Control → Commands → `+` → set the phrase (e.g. `Boule de feu`) to "Press keyboard shortcut" → record `Cmd+Alt+1`.
+
+Now speaking the French phrase will press the shortcut, which fires the addin, which runs the spell.
+
+> **Important — do not have the dndlights Control Panel open while using voice/keyboard triggers.** The panel is a blocking Shiny gadget, so while it is open the R session is busy and any keyboard-shortcut addin you trigger will be queued but will not execute until you close the panel. Use the panel for manual play and rehearsal; close it before live voice play.
+
+You can also use any other hotword engine (Whisper, Picovoice, push-to-talk macros, etc.) — just have it call the R function directly or press the bound shortcut.
 
 ---
 

@@ -18,6 +18,13 @@
 #' Launch from the RStudio **Addins** menu → *dndlights Control Panel*, or
 #' bind it to a keyboard shortcut via Tools → Modify Keyboard Shortcuts.
 #'
+#' **Concurrency note for voice-command users:** while this panel is open
+#' the R session is locked inside Shiny's event loop, so keyboard shortcuts
+#' bound to other dndlights addins (e.g. `fireball`, `slash`) will not fire
+#' — RStudio queues the shortcut but the R session cannot execute it until
+#' the panel closes.  For live voice-command play, keep the panel closed
+#' and trigger spells via shortcuts directly.
+#'
 #' @return Called for side effects. Blocks the R console until the panel is
 #'   closed.
 #' @export
