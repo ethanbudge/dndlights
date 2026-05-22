@@ -2,9 +2,9 @@
 # dndlights — Non-Spell Sound Effects
 # ==============================================================================
 # Environmental, creature, and PC combat effects that don't map to a spell.
-# All follow the same light-sequence pattern as spells and revert to the
-# current ambient scene state when finished. Light transitions are tuned for
-# smoothness — no abrupt hue jumps, no harsh brightness cliffs.
+# All follow the same WAV-timed pattern as spells: buildup colours sit in the
+# impact's hue family (muted), then a sudden bright frame fires on the audio
+# peak, then a smooth decay tracks the audio envelope back down.
 #
 # PC Combat effects (arcane_shot, wild_shape, bludgeon, slash, pierce) carry
 # French voice triggers like the spells; the rest are intended for direct
@@ -25,20 +25,23 @@
 
 #' Arcane Shot effect
 #'
-#' Red anticipation, a sharp white muzzle flash, the red arcane slug trails
-#' through the air, and impact glows down through deep red before fading.
+#' Muted red gathers, charges through brighter red, the muzzle flashes in a
+#' near-white burst, and the slug trails through deep red into smoke.  Timed
+#' to arcane_shot.wav (peak ~1.28s, trail through 1.48s).
 #'
 #' @return Invisibly `NULL`. Called for side effects.
 #' @export
 arcane_shot <- function() {
   play_sound(.get_sound_path("arcane_shot.wav"))
 
-  change_light(color_name = "#3A0A0A", brightness = 0.10, duration = 0.10) # anticipation
-  change_light(color_name = "#FFE0E0", brightness = 0.95, duration = 0.04) # muzzle flash
-  change_light(color_name = "#FF2020", brightness = 0.70, duration = 0.08) # slug trails red
-  change_light(color_name = "#C81818", brightness = 0.45, duration = 0.14) # impact glow
-  change_light(color_name = "#800808", brightness = 0.18, duration = 0.40) # deep red
-  change_light(color_name = "#400404", brightness = 0.06, duration = 0.70) # smoke fades
+  change_light(color_name = "#5C0808", brightness = 0.22, duration = 0.40) # anticipation
+  change_light(color_name = "#903030", brightness = 0.45, duration = 0.50) # charging
+  change_light(color_name = "#C04040", brightness = 0.68, duration = 0.38) # near-impact
+  change_light(color_name = "#FFE0E0", brightness = 0.98, duration = 0.06) # MUZZLE FLASH
+  change_light(color_name = "#FF2020", brightness = 0.82, duration = 0.12) # slug trail
+  change_light(color_name = "#C81818", brightness = 0.60, duration = 0.12) # impact
+  change_light(color_name = "#800808", brightness = 0.32, duration = 0.30) # deep red
+  change_light(color_name = "#400404", brightness = 0.10, duration = 0.50) # smoke fades
 
   revert_state(duration = 2)
 }
@@ -52,20 +55,22 @@ arcane_shot <- function() {
 
 #' Wild Shape effect
 #'
-#' Nature energy gathers from deep forest green, surges through vivid green at
-#' the moment of transformation, and settles back into primal forest darkness.
+#' Forest green stirs, surges through brighter green toward transformation,
+#' peaks in a vivid bright-green flash as the beast emerges, and settles back
+#' into primal darkness.  Timed to wild_shape.wav (peak ~1.78s).
 #'
 #' @return Invisibly `NULL`. Called for side effects.
 #' @export
 wild_shape <- function() {
   play_sound(.get_sound_path("wild_shape.wav"))
 
-  change_light(color_name = "#0A1A08", brightness = 0.08, duration = 0.25) # anticipation
-  change_light(color_name = "#228B22", brightness = 0.30, duration = 0.25) # gathering
-  change_light(color_name = "#55CC44", brightness = 0.60, duration = 0.28) # transformation
-  change_light(color_name = "#88FF44", brightness = 0.85, duration = 0.25) # peak shift
-  change_light(color_name = "#55CC44", brightness = 0.55, duration = 0.30) # new form
-  change_light(color_name = "#226622", brightness = 0.28, duration = 0.55) # beast complete
+  change_light(color_name = "#2A4A20", brightness = 0.22, duration = 0.45) # forest stirs
+  change_light(color_name = "#387028", brightness = 0.42, duration = 0.40) # gathering
+  change_light(color_name = "#44A038", brightness = 0.62, duration = 0.40) # surging
+  change_light(color_name = "#66CC44", brightness = 0.78, duration = 0.53) # near-impact
+  change_light(color_name = "#98FF50", brightness = 0.95, duration = 0.18) # TRANSFORMATION
+  change_light(color_name = "#55CC44", brightness = 0.65, duration = 0.18) # new form
+  change_light(color_name = "#226622", brightness = 0.35, duration = 0.40) # beast complete
   change_light(color_name = "#112211", brightness = 0.10, duration = 1.20) # primal settle
 
   revert_state(duration = 3)
@@ -79,20 +84,22 @@ wild_shape <- function() {
 
 #' Bludgeon effect
 #'
-#' Heavy impact frame — grey anticipation, white-grey rise, a bright red BLAM
-#' at peak, then a clean grey fadeout. No bleed.
+#' Grey anticipation rises through white-grey to a near-white pre-impact, the
+#' weapon connects in a bright red flash, then a clean white-grey fadeout
+#' returns to silence.  Timed to bludgeon.wav (peak ~1.08s, secondary at 1.24s).
 #'
 #' @return Invisibly `NULL`. Called for side effects.
 #' @export
 bludgeon <- function() {
   play_sound(.get_sound_path("bludgeon.wav"))
 
-  change_light(color_name = "#3A3A3A", brightness = 0.15, duration = 0.06) # grey anticipation
-  change_light(color_name = "#A8A8A8", brightness = 0.50, duration = 0.05) # white-grey rise
-  change_light(color_name = "#FF0033", brightness = 0.95, duration = 0.06) # RED IMPACT
-  change_light(color_name = "#CCCCCC", brightness = 0.60, duration = 0.06) # white fadeout
-  change_light(color_name = "#808080", brightness = 0.30, duration = 0.10) # grey settling
-  change_light(color_name = "#404040", brightness = 0.12, duration = 0.25) # back to grey
+  change_light(color_name = "#6A6A6A", brightness = 0.25, duration = 0.40) # grey anticipation
+  change_light(color_name = "#A8A8A8", brightness = 0.50, duration = 0.30) # white-grey rise
+  change_light(color_name = "#C0C0C0", brightness = 0.72, duration = 0.38) # near-impact
+  change_light(color_name = "#FF0033", brightness = 0.95, duration = 0.08) # RED IMPACT
+  change_light(color_name = "#CCCCCC", brightness = 0.60, duration = 0.16) # white fadeout
+  change_light(color_name = "#888888", brightness = 0.35, duration = 0.20) # grey settling
+  change_light(color_name = "#404040", brightness = 0.12, duration = 0.40) # back to grey
 
   revert_state(duration = 1)
 }
@@ -105,20 +112,21 @@ bludgeon <- function() {
 
 #' Slash effect
 #'
-#' Sharp impact frame — quick grey anticipation, brilliant white blade flash,
-#' a bright red SLASH peak, then a fast white-to-grey fade. No bleed.
+#' Near-instant: a brief grey ready-frame, a brilliant white blade flash, a
+#' bright red slash, then a fast white-to-grey fade.  Timed to slash.wav
+#' (peak ~0.06s, very short).
 #'
 #' @return Invisibly `NULL`. Called for side effects.
 #' @export
 slash <- function() {
   play_sound(.get_sound_path("slash.wav"))
 
-  change_light(color_name = "#3A3A3A", brightness = 0.18, duration = 0.04) # grey anticipation
-  change_light(color_name = "#FFFFFF", brightness = 0.92, duration = 0.03) # steel flash
-  change_light(color_name = "#FF0033", brightness = 0.98, duration = 0.03) # RED SLASH
+  change_light(color_name = "#888888", brightness = 0.40, duration = 0.02) # grey ready
+  change_light(color_name = "#FFFFFF", brightness = 0.95, duration = 0.04) # STEEL FLASH
+  change_light(color_name = "#FF0033", brightness = 0.98, duration = 0.04) # RED SLASH
   change_light(color_name = "#EEEEEE", brightness = 0.65, duration = 0.05) # white fadeout
   change_light(color_name = "#888888", brightness = 0.30, duration = 0.10) # grey settle
-  change_light(color_name = "#404040", brightness = 0.10, duration = 0.28) # quiet grey
+  change_light(color_name = "#383838", brightness = 0.10, duration = 0.30) # quiet grey
 
   revert_state(duration = 1)
 }
@@ -131,17 +139,20 @@ slash <- function() {
 
 #' Pierce effect
 #'
-#' Focused impact frame — grey anticipation, sharp white point flash, a bright
-#' red THRUST peak, then a tight white-to-grey fadeout. No bleed.
+#' Grey anticipation rises slowly through white-grey to a near-white point,
+#' then a brilliant white point-flash followed by a bright red thrust, and a
+#' tight white-to-grey fadeout.  Timed to pierce.wav (peak ~1.14s, fast decay).
 #'
 #' @return Invisibly `NULL`. Called for side effects.
 #' @export
 pierce <- function() {
   play_sound(.get_sound_path("pierce.wav"))
 
-  change_light(color_name = "#3A3A3A", brightness = 0.16, duration = 0.04) # grey anticipation
-  change_light(color_name = "#FFFFFF", brightness = 0.82, duration = 0.03) # point flash
-  change_light(color_name = "#FF0033", brightness = 0.95, duration = 0.04) # RED THRUST
+  change_light(color_name = "#6A6A6A", brightness = 0.25, duration = 0.40) # grey anticipation
+  change_light(color_name = "#888888", brightness = 0.45, duration = 0.40) # rising
+  change_light(color_name = "#BBBBBB", brightness = 0.65, duration = 0.30) # point gathering
+  change_light(color_name = "#FFFFFF", brightness = 0.92, duration = 0.04) # POINT FLASH
+  change_light(color_name = "#FF0033", brightness = 0.98, duration = 0.06) # RED THRUST
   change_light(color_name = "#DDDDDD", brightness = 0.55, duration = 0.05) # white fadeout
   change_light(color_name = "#777777", brightness = 0.25, duration = 0.10) # grey settle
   change_light(color_name = "#383838", brightness = 0.08, duration = 0.30) # quiet grey
@@ -162,20 +173,21 @@ pierce <- function() {
 
 #' Spider Bite effect
 #'
-#' The spider strikes from shadow: a sharp green venom flash, then creeping
-#' poison spreading through deeper green into paralysis darkness.
+#' Dark forest green shadow strikes, gathers through deeper green, snaps to a
+#' bright venom-green peak, and creeps down through poison spread into
+#' paralysis.  Timed to spider_bite.wav (peak ~0.30s).
 #'
 #' @return Invisibly `NULL`. Called for side effects.
 #' @export
 spider_bite <- function() {
   play_sound(.get_sound_path("spider_bite.wav"))
 
-  change_light(color_name = "#0A1500", brightness = 0.04, duration = 0.12) # shadow strike
-  change_light(color_name = "#22AA00", brightness = 0.32, duration = 0.05) # bite contact
-  change_light(color_name = "#44FF00", brightness = 0.65, duration = 0.07) # venom flash
-  change_light(color_name = "#33CC00", brightness = 0.40, duration = 0.14) # poison spreading
-  change_light(color_name = "#114400", brightness = 0.14, duration = 0.50) # venom courses
-  change_light(color_name = "#081A00", brightness = 0.04, duration = 0.95) # paralysis
+  change_light(color_name = "#1A4A0F", brightness = 0.18, duration = 0.10) # shadow strike
+  change_light(color_name = "#226A18", brightness = 0.42, duration = 0.20) # gathering
+  change_light(color_name = "#44FF00", brightness = 0.85, duration = 0.08) # VENOM PEAK
+  change_light(color_name = "#33CC00", brightness = 0.55, duration = 0.14) # poison spreading
+  change_light(color_name = "#114400", brightness = 0.22, duration = 0.30) # venom courses
+  change_light(color_name = "#081A00", brightness = 0.06, duration = 0.40) # paralysis
 
   revert_state(duration = 2)
 }
@@ -188,23 +200,27 @@ spider_bite <- function() {
 
 #' Worm Surge effect
 #'
-#' Deep brown rumble underground, then the eruption transitions brown → purple
-#' → brown as the worm bursts up, twists in purple-tinged frenzy, and the
-#' creature looms in receding earth tones.
+#' Brown rumble beneath the ground builds into the eruption — earth bursts up
+#' brown, the worm's bulk peaks in a flash of purple, brown returns, the
+#' creature writhes, then a late surge before settling.  Timed to
+#' worm_surge.wav (peak ~1.70s, late surge at 3.84s).
 #'
 #' @return Invisibly `NULL`. Called for side effects.
 #' @export
 worm_surge <- function() {
   play_sound(.get_sound_path("worm_surge.wav"))
 
-  change_light(color_name = "#2A1800", brightness = 0.08, duration = 0.35) # rumbling beneath
-  change_light(color_name = "#5C3D20", brightness = 0.22, duration = 0.25) # ground cracking
-  change_light(color_name = "#7A4A28", brightness = 0.55, duration = 0.14) # earth bursts — brown
-  change_light(color_name = "#6A3878", brightness = 0.75, duration = 0.12) # purple eruption — peak
-  change_light(color_name = "#7A4A28", brightness = 0.55, duration = 0.15) # back to brown
-  change_light(color_name = "#5C3018", brightness = 0.38, duration = 0.25) # writhing
-  change_light(color_name = "#3A2010", brightness = 0.15, duration = 0.85) # looming
-  change_light(color_name = "#1F1008", brightness = 0.05, duration = 0.80) # settle
+  change_light(color_name = "#2A1800", brightness = 0.15, duration = 0.40) # rumbling deep
+  change_light(color_name = "#5C3D20", brightness = 0.32, duration = 0.45) # cracking
+  change_light(color_name = "#7A4A28", brightness = 0.55, duration = 0.45) # earth bursting
+  change_light(color_name = "#8B5828", brightness = 0.68, duration = 0.40) # near-impact
+  change_light(color_name = "#6A3878", brightness = 0.82, duration = 0.10) # PURPLE ERUPTION
+  change_light(color_name = "#7A4A28", brightness = 0.62, duration = 0.20) # back to brown
+  change_light(color_name = "#5C3018", brightness = 0.42, duration = 0.30) # writhing
+  change_light(color_name = "#3A2010", brightness = 0.20, duration = 1.54) # looming
+  change_light(color_name = "#5A3020", brightness = 0.45, duration = 0.30) # late surge
+  change_light(color_name = "#3A2010", brightness = 0.20, duration = 0.40) # settling
+  change_light(color_name = "#1F1008", brightness = 0.06, duration = 0.50) # final fade
 
   revert_state(duration = 3)
 }
@@ -217,21 +233,25 @@ worm_surge <- function() {
 
 #' Crystal Breath effect
 #'
-#' Pale crystals form in the throat, charge to a peak, a blinding barrage of
-#' cyan shards fires, and splinters settle through cooler blues into stillness.
+#' Pale crystals form, charge through cyan, the barrage fires in a near-white
+#' burst, sustains through two shard pulses, and splinters settle through
+#' cooler blues into stillness.  Timed to crystal_breath.wav (peak ~0.40s,
+#' sustained shard cluster through 0.58s).
 #'
 #' @return Invisibly `NULL`. Called for side effects.
 #' @export
 crystal_breath <- function() {
   play_sound(.get_sound_path("crystal_breath.wav"))
 
-  change_light(color_name = "#1A2A35", brightness = 0.10, duration = 0.20) # anticipation
-  change_light(color_name = "#AAEEFF", brightness = 0.35, duration = 0.18) # crystals forming
-  change_light(color_name = "#66DDFF", brightness = 0.65, duration = 0.14) # charging
-  change_light(color_name = "#EEFFFF", brightness = 0.98, duration = 0.12) # blinding barrage
-  change_light(color_name = "#88CCFF", brightness = 0.62, duration = 0.18) # shards flying
+  change_light(color_name = "#B0DEEF", brightness = 0.30, duration = 0.10) # crystals form
+  change_light(color_name = "#88CCEE", brightness = 0.55, duration = 0.10) # charging
+  change_light(color_name = "#66DDFF", brightness = 0.78, duration = 0.20) # near-impact
+  change_light(color_name = "#EEFFFF", brightness = 0.98, duration = 0.10) # BARRAGE PEAK
+  change_light(color_name = "#88CCFF", brightness = 0.78, duration = 0.12) # shard pulse 1
+  change_light(color_name = "#66B8E8", brightness = 0.58, duration = 0.18) # shard pulse 2
   change_light(color_name = "#4499CC", brightness = 0.38, duration = 0.30) # impact shatter
-  change_light(color_name = "#224466", brightness = 0.14, duration = 1.20) # splinters settle
+  change_light(color_name = "#2266AA", brightness = 0.18, duration = 0.40) # splinters
+  change_light(color_name = "#224466", brightness = 0.06, duration = 0.80) # settle
 
   revert_state(duration = 3)
 }
@@ -244,20 +264,21 @@ crystal_breath <- function() {
 
 #' Dragon Bite effect
 #'
-#' Shadow of jaws descending in deepening darkness, a savage red impact,
-#' wrenching tear, then deepening blood-red wound that settles into pain.
+#' Jaws descend almost instantly: shadow contact, savage red impact at peak,
+#' tearing wrench, then deepening blood-red wound settling into pain.  Timed
+#' to dragon_bite.wav (peak ~0.06s, very fast).
 #'
 #' @return Invisibly `NULL`. Called for side effects.
 #' @export
 dragon_bite <- function() {
   play_sound(.get_sound_path("dragon_bite.wav"))
 
-  change_light(color_name = "#1A0000", brightness = 0.06, duration = 0.12) # jaws descend
-  change_light(color_name = "#5A0808", brightness = 0.28, duration = 0.05) # contact
-  change_light(color_name = "#CC3300", brightness = 0.78, duration = 0.06) # BITE — red
-  change_light(color_name = "#880000", brightness = 0.45, duration = 0.10) # tear
-  change_light(color_name = "#550000", brightness = 0.22, duration = 0.30) # wound
-  change_light(color_name = "#220000", brightness = 0.08, duration = 0.90) # pain settles
+  change_light(color_name = "#2A0808", brightness = 0.18, duration = 0.02) # jaws descend
+  change_light(color_name = "#CC3300", brightness = 0.88, duration = 0.06) # RED BITE
+  change_light(color_name = "#880000", brightness = 0.55, duration = 0.10) # tear
+  change_light(color_name = "#550000", brightness = 0.25, duration = 0.20) # wound
+  change_light(color_name = "#330000", brightness = 0.12, duration = 0.30) # blood deepens
+  change_light(color_name = "#1A0000", brightness = 0.06, duration = 0.60) # pain settles
 
   revert_state(duration = 2)
 }
@@ -275,21 +296,25 @@ dragon_bite <- function() {
 
 #' Hammer Slam effect
 #'
-#' Electric-blue charge builds as the magical hammer swings, detonates on
-#' impact in a blue-white flash, and a crackling shockwave fades through
-#' deepening blue.
+#' Muted electric blue charges as the hammer swings, builds through brighter
+#' blue, slams in a near-white flash at peak, and the shockwave fades through
+#' three diminishing electric pulses into grounded silence.  Timed to
+#' hammer_slam.wav (peak ~1.26s, pulse cluster through 1.62s).
 #'
 #' @return Invisibly `NULL`. Called for side effects.
 #' @export
 hammer_slam <- function() {
   play_sound(.get_sound_path("hammer_slam.wav"))
 
-  change_light(color_name = "#0A1A40", brightness = 0.12, duration = 0.10) # anticipation
-  change_light(color_name = "#4488FF", brightness = 0.50, duration = 0.08) # charge builds
-  change_light(color_name = "#AACCFF", brightness = 0.95, duration = 0.06) # SLAM flash
-  change_light(color_name = "#2266FF", brightness = 0.70, duration = 0.10) # shockwave
-  change_light(color_name = "#1144CC", brightness = 0.40, duration = 0.25) # crackling
-  change_light(color_name = "#001888", brightness = 0.12, duration = 0.75) # grounding
+  change_light(color_name = "#2A488A", brightness = 0.22, duration = 0.40) # anticipation
+  change_light(color_name = "#4488FF", brightness = 0.50, duration = 0.40) # charge builds
+  change_light(color_name = "#88BBFF", brightness = 0.72, duration = 0.46) # near-impact
+  change_light(color_name = "#DDEEFF", brightness = 0.98, duration = 0.08) # SLAM
+  change_light(color_name = "#AACCFF", brightness = 0.78, duration = 0.16) # pulse 1
+  change_light(color_name = "#2266FF", brightness = 0.60, duration = 0.20) # pulse 2
+  change_light(color_name = "#1144CC", brightness = 0.38, duration = 0.30) # crackling
+  change_light(color_name = "#001888", brightness = 0.18, duration = 0.50) # grounding
+  change_light(color_name = "#000A40", brightness = 0.06, duration = 0.40) # silence
 
   revert_state(duration = 2)
 }
@@ -302,19 +327,20 @@ hammer_slam <- function() {
 
 #' Ignite effect
 #'
-#' A combustion spark builds into a brief hot-orange burst and smooths down to
-#' a quick smoulder.
+#' Near-instant: a combustion spark snaps into a bright hot-orange burst,
+#' blooms briefly, and smoulders down to a quick ember.  Timed to ignite.wav
+#' (peak ~0.04s, fast).
 #'
 #' @return Invisibly `NULL`. Called for side effects.
 #' @export
 ignite <- function() {
   play_sound(.get_sound_path("ignite.wav"))
 
-  change_light(color_name = "#FF6600", brightness = 0.45, duration = 0.06) # combustion spark
-  change_light(color_name = "#FFAA00", brightness = 0.88, duration = 0.07) # burst peak
+  change_light(color_name = "#FF6600", brightness = 0.50, duration = 0.04) # combustion spark
+  change_light(color_name = "#FFAA00", brightness = 0.92, duration = 0.06) # BURST PEAK
   change_light(color_name = "#FF7700", brightness = 0.55, duration = 0.12) # flame blooms
   change_light(color_name = "#CC2200", brightness = 0.22, duration = 0.30) # smoulder
-  change_light(color_name = "#5A1000", brightness = 0.06, duration = 0.60) # quiet ember
+  change_light(color_name = "#5A1000", brightness = 0.06, duration = 0.50) # ember fade
 
   revert_state(duration = 2)
 }
@@ -327,19 +353,23 @@ ignite <- function() {
 
 #' Gust effect
 #'
-#' Pale wind gathers, the rush hits in a soft white-blue flicker, and streams
-#' away through cooler blues.
+#' A very long pale wind buildup gathers through cooler whites toward a bright
+#' rush at peak, then streams away through cooler blues.  Timed to gust.wav
+#' (peak ~4.80s — extended buildup).
 #'
 #' @return Invisibly `NULL`. Called for side effects.
 #' @export
 gust <- function() {
   play_sound(.get_sound_path("gust.wav"))
 
-  change_light(color_name = "#E8F4FF", brightness = 0.28, duration = 0.10) # wind gathering
-  change_light(color_name = "#FFFFFF", brightness = 0.62, duration = 0.10) # rush peak
-  change_light(color_name = "#CCE8FF", brightness = 0.40, duration = 0.15) # streaming
-  change_light(color_name = "#AADDFF", brightness = 0.20, duration = 0.30) # dispersing
-  change_light(color_name = "#6090C0", brightness = 0.06, duration = 0.50) # last breath
+  change_light(color_name = "#C0D8F0", brightness = 0.25, duration = 1.20) # wind stirring
+  change_light(color_name = "#D8E8F8", brightness = 0.45, duration = 1.20) # gathering
+  change_light(color_name = "#EEF4FF", brightness = 0.62, duration = 1.20) # building
+  change_light(color_name = "#F8FCFF", brightness = 0.80, duration = 1.20) # near-peak
+  change_light(color_name = "#FFFFFF", brightness = 0.92, duration = 0.10) # RUSH PEAK
+  change_light(color_name = "#DDEEFF", brightness = 0.65, duration = 0.30) # streaming
+  change_light(color_name = "#BBDDFF", brightness = 0.38, duration = 0.40) # dispersing
+  change_light(color_name = "#88AADD", brightness = 0.15, duration = 0.80) # last breath
 
   revert_state(duration = 2)
 }
@@ -352,22 +382,24 @@ gust <- function() {
 
 #' Spore Burst effect
 #'
-#' A sac ruptures from dark forest green, blooms into a bright light-purple
-#' cloud at peak, and the spores settle back through purple-green into deep
-#' green stillness.
+#' Dark green sac under pressure shifts through muted purple-green toward
+#' rupture, bursts in a bright light-purple cloud at peak, sustains through
+#' the spore drift, then settles back through purple-green into deep green
+#' stillness.  Timed to spore_burst.wav (peak ~1.00s, sustained through 0.86s).
 #'
 #' @return Invisibly `NULL`. Called for side effects.
 #' @export
 spore_burst <- function() {
   play_sound(.get_sound_path("spore_burst.wav"))
 
-  change_light(color_name = "#0F2A0F", brightness = 0.18, duration = 0.18) # dark green sac
-  change_light(color_name = "#3A5A2A", brightness = 0.35, duration = 0.12) # building pressure
-  change_light(color_name = "#9070C8", brightness = 0.60, duration = 0.12) # rupture transition
-  change_light(color_name = "#D8A8FF", brightness = 0.88, duration = 0.15) # light purple peak
-  change_light(color_name = "#A878D0", brightness = 0.55, duration = 0.25) # cloud drifts
-  change_light(color_name = "#5A6038", brightness = 0.28, duration = 0.45) # purple-green settle
-  change_light(color_name = "#1F3015", brightness = 0.10, duration = 1.00) # deep green
+  change_light(color_name = "#224028", brightness = 0.22, duration = 0.30) # dark green sac
+  change_light(color_name = "#5C4040", brightness = 0.42, duration = 0.32) # transitioning
+  change_light(color_name = "#8870A8", brightness = 0.65, duration = 0.38) # near-impact purple
+  change_light(color_name = "#D8A8FF", brightness = 0.92, duration = 0.10) # PURPLE BURST
+  change_light(color_name = "#A878D0", brightness = 0.65, duration = 0.20) # cloud sustains
+  change_light(color_name = "#786088", brightness = 0.42, duration = 0.40) # purple-green blend
+  change_light(color_name = "#4A5030", brightness = 0.25, duration = 0.50) # back toward green
+  change_light(color_name = "#1F3015", brightness = 0.08, duration = 0.80) # deep green
 
   revert_state(duration = 3)
 }
@@ -380,20 +412,21 @@ spore_burst <- function() {
 
 #' Flask Shatter effect
 #'
-#' Glass shatters and the alchemical reaction flares in a bright yellow-green
-#' flash; fumes rise and the haze settles down through olive into dark.
+#' Near-instant: glass shatters in olive-green, the alchemical reaction flares
+#' to a bright yellow-green peak, spray spreads, and fumes settle through
+#' olive into dark haze.  Timed to flask_shatter.wav (peak ~0.10s, fast).
 #'
 #' @return Invisibly `NULL`. Called for side effects.
 #' @export
 flask_shatter <- function() {
   play_sound(.get_sound_path("flask_shatter.wav"))
 
-  change_light(color_name = "#88AA20", brightness = 0.40, duration = 0.05) # shatter
-  change_light(color_name = "#CCFF66", brightness = 0.90, duration = 0.06) # reaction peak
-  change_light(color_name = "#AAEE33", brightness = 0.65, duration = 0.08) # spray
-  change_light(color_name = "#88DD00", brightness = 0.40, duration = 0.12) # spreading
-  change_light(color_name = "#446600", brightness = 0.20, duration = 0.30) # fumes
-  change_light(color_name = "#223300", brightness = 0.06, duration = 0.80) # haze
+  change_light(color_name = "#88AA20", brightness = 0.45, duration = 0.04) # glass shatters
+  change_light(color_name = "#CCFF66", brightness = 0.92, duration = 0.06) # REACTION PEAK
+  change_light(color_name = "#AAEE33", brightness = 0.70, duration = 0.10) # spray
+  change_light(color_name = "#88DD00", brightness = 0.45, duration = 0.15) # spreading
+  change_light(color_name = "#446600", brightness = 0.22, duration = 0.25) # fumes
+  change_light(color_name = "#223300", brightness = 0.06, duration = 0.50) # haze
 
   revert_state(duration = 2)
 }
@@ -406,20 +439,24 @@ flask_shatter <- function() {
 
 #' Steam Blast effect
 #'
-#' A pressurised vent erupts in a blinding white burst, billows out through
-#' lighter whites, and thins to drifting wisps.
+#' Pressurised vent builds in pale grey, bursts to brilliant white at peak,
+#' sustains through a second pulse, then billows out through cooler whites
+#' into drifting wisps.  Timed to steam_blast.wav (peak ~0.24s, sustained
+#' through 0.32s).
 #'
 #' @return Invisibly `NULL`. Called for side effects.
 #' @export
 steam_blast <- function() {
   play_sound(.get_sound_path("steam_blast.wav"))
 
-  change_light(color_name = "#E8E8E8", brightness = 0.45, duration = 0.08) # vent builds
-  change_light(color_name = "#FFFFFF", brightness = 0.92, duration = 0.08) # white burst
-  change_light(color_name = "#F5F5F5", brightness = 0.70, duration = 0.12) # billowing
-  change_light(color_name = "#EBEBEB", brightness = 0.50, duration = 0.20) # rolling
-  change_light(color_name = "#D8D8D8", brightness = 0.28, duration = 0.45) # thinning
-  change_light(color_name = "#BBBBBB", brightness = 0.10, duration = 0.85) # last wisps
+  change_light(color_name = "#C8C8C8", brightness = 0.40, duration = 0.08) # vent builds
+  change_light(color_name = "#E8E8E8", brightness = 0.72, duration = 0.16) # pressure
+  change_light(color_name = "#FFFFFF", brightness = 0.95, duration = 0.08) # WHITE BURST
+  change_light(color_name = "#F8F8F8", brightness = 0.85, duration = 0.10) # second pulse
+  change_light(color_name = "#F0F0F0", brightness = 0.62, duration = 0.20) # billowing
+  change_light(color_name = "#DDDDDD", brightness = 0.40, duration = 0.30) # rolling
+  change_light(color_name = "#C8C8C8", brightness = 0.22, duration = 0.50) # thinning
+  change_light(color_name = "#A0A0A0", brightness = 0.08, duration = 0.90) # last wisps
 
   revert_state(duration = 2)
 }
@@ -432,21 +469,26 @@ steam_blast <- function() {
 
 #' Arcane Surge effect
 #'
-#' Metallic energy builds through silver to gold, detonates in a blinding
-#' silver-white burst, and dissipates through metallic haze.
+#' A very long buildup: muted metallic anticipation, silver expanding, gold
+#' surging, near-impact warmth, then a blinding white burst at peak; the
+#' shockwave dissipates through metallic haze into deep silence.  Timed to
+#' arcane_surge.wav (peak ~4.26s — extended buildup).
 #'
 #' @return Invisibly `NULL`. Called for side effects.
 #' @export
 arcane_surge <- function() {
   play_sound(.get_sound_path("arcane_surge.wav"))
 
-  change_light(color_name = "#3A3A40", brightness = 0.15, duration = 0.20) # anticipation
-  change_light(color_name = "#C0C0C0", brightness = 0.45, duration = 0.25) # silver building
-  change_light(color_name = "#FFD700", brightness = 0.70, duration = 0.25) # gold surge
-  change_light(color_name = "#F8F8F8", brightness = 0.98, duration = 0.16) # blinding burst
-  change_light(color_name = "#E8D080", brightness = 0.72, duration = 0.20) # shockwave
-  change_light(color_name = "#A09050", brightness = 0.48, duration = 0.40) # metallic haze
-  change_light(color_name = "#705030", brightness = 0.18, duration = 1.50) # dissipating
+  change_light(color_name = "#4A4A50", brightness = 0.18, duration = 0.80) # anticipation
+  change_light(color_name = "#8A8A8A", brightness = 0.35, duration = 1.00) # silver beginning
+  change_light(color_name = "#C0C0C0", brightness = 0.55, duration = 1.00) # silver building
+  change_light(color_name = "#E8D080", brightness = 0.70, duration = 0.90) # gold rising
+  change_light(color_name = "#F8E090", brightness = 0.85, duration = 0.56) # near-impact
+  change_light(color_name = "#FFFFFF", brightness = 0.98, duration = 0.10) # BLINDING BURST
+  change_light(color_name = "#E8D080", brightness = 0.75, duration = 0.20) # shockwave
+  change_light(color_name = "#A09050", brightness = 0.50, duration = 0.30) # metallic haze
+  change_light(color_name = "#705030", brightness = 0.22, duration = 0.50) # dissipating
+  change_light(color_name = "#3A2810", brightness = 0.08, duration = 1.20) # fade out
 
   revert_state(duration = 3)
 }
@@ -459,20 +501,24 @@ arcane_surge <- function() {
 
 #' Sand Blast effect
 #'
-#' Amber sand swirls up, fires in a stinging blast, and the cloud settles
-#' through warm sand tones into drifting dust.
+#' Amber sand swirls up, builds through brighter sand toward the blast peak,
+#' fires in a stinging gold burst, and the cloud settles through warm sand
+#' tones into drifting dust.  Timed to sand_blast.wav (peak ~0.42s, sub-peak
+#' at 0.48s).
 #'
 #' @return Invisibly `NULL`. Called for side effects.
 #' @export
 sand_blast <- function() {
   play_sound(.get_sound_path("sand_blast.wav"))
 
-  change_light(color_name = "#A07840", brightness = 0.28, duration = 0.10) # sand swirls
-  change_light(color_name = "#D4A055", brightness = 0.55, duration = 0.10) # building
-  change_light(color_name = "#E8B860", brightness = 0.78, duration = 0.10) # blast peak
-  change_light(color_name = "#C89040", brightness = 0.55, duration = 0.14) # spreading
+  change_light(color_name = "#886020", brightness = 0.30, duration = 0.20) # sand swirls
+  change_light(color_name = "#C08840", brightness = 0.52, duration = 0.14) # building
+  change_light(color_name = "#E8B860", brightness = 0.78, duration = 0.08) # near-impact
+  change_light(color_name = "#FFD080", brightness = 0.92, duration = 0.08) # BLAST PEAK
+  change_light(color_name = "#D4A055", brightness = 0.68, duration = 0.14) # sub-peak
+  change_light(color_name = "#C89040", brightness = 0.50, duration = 0.16) # spreading
   change_light(color_name = "#A07030", brightness = 0.32, duration = 0.30) # cloud settles
-  change_light(color_name = "#704A1A", brightness = 0.10, duration = 0.75) # dust haze
+  change_light(color_name = "#704A1A", brightness = 0.10, duration = 0.50) # dust haze
 
   revert_state(duration = 2)
 }
