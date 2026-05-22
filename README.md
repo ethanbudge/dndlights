@@ -1,28 +1,49 @@
 # dndlights
 
-An R package for triggering synchronized **D&D sound effects and LIFX smart light animations** — designed to be bound to hotkeys or French voice commands at the table. Covers spells, creature attacks, environmental effects, and full scene control with Spotify playlist integration.
-
----
-
-## What it does
-
-Call an R function when something happens at the table. Each function plays a themed sound effect and drives your LIFX lights through a colour sequence that matches the flavour of the event. Call `cue_scene()` first to set the ambient lighting and music for wherever the party is — spell effects will automatically revert to that scene's lighting when they finish.
+An R package that synchronises **D&D sound effects, LIFX smart-light animations, and Spotify playlists** for live tabletop play. Each spell, creature attack, combat action, and environmental cue is a single R function — bind it to a hotkey, a voice command, or click it in the RStudio dashboard.
 
 ```r
-cue_scene("tavern")   # warm amber lantern light + tavern playlist
-fireball()            # flash orange → revert to tavern amber
-cue_scene("mine")     # near-dark purple mushroom glow + mine playlist
-spider_bite()         # green venom flash → revert to mine darkness
+cue_scene("tavern")    # warm amber lantern light + tavern playlist starts
+fireball()             # orange explosion flashes → lights revert to tavern amber
+cue_scene("mine")      # deep mushroom-purple ambience + mine playlist
+spider_bite()          # green venom flash → lights revert to mine darkness
 ```
 
 ---
 
-## Installation
+## Quick start
 
 ```r
+# 1. Install
 install.packages("devtools")
 devtools::install_github("YOUR_USERNAME/dndlights")
+
+# 2. LIFX
+library(dndlights)
+dnd_set_token("your_lifx_personal_access_token")
+
+# 3. Spotify (see Setup §2 for the one-time browser auth)
+Sys.setenv(SPOTIFY_CLIENT_ID     = "your_client_id",
+           SPOTIFY_CLIENT_SECRET = "your_client_secret")
+
+# 4. Sounds (see Setup §3)
+dnd_set_sounds_dir("~/path/to/sounds")
+
+# 5. Open the dashboard
+dnd_addin()
 ```
+
+---
+
+## How it works
+
+Three layers stack:
+
+1. **Scene** (`cue_scene()`) — sets ambient lighting *and* starts a looping Spotify playlist for wherever the party is.
+2. **Spells** (`fireball()`, `cure_wounds()`, …) — play a sound and run a light sequence, then **fade the lights back to the active scene** so the table isn't left in spell colours.
+3. **Effects** (`spider_bite()`, `bludgeon()`, …) — same as spells, for non-spell events: PC attacks, creature actions, environmental cues.
+
+Every function reverts to the scene colour automatically — you never have to clean up.
 
 ---
 
@@ -30,198 +51,232 @@ devtools::install_github("YOUR_USERNAME/dndlights")
 
 ### 1. LIFX token
 
-1. Go to <https://cloud.lifx.com/settings> and generate a personal access token.
-2. Set it for the session:
-
-```r
-library(dndlights)
-dnd_set_token("your_lifx_token_here")
-```
-
-To persist across sessions, add to `.Renviron` (open with `usethis::edit_r_environ()`):
-
-```
-LIFX_TOKEN=your_lifx_token_here
-```
+1. Sign in at <https://cloud.lifx.com/settings> and create a **personal access token**.
+2. Either set it in your R session:
+   ```r
+   dnd_set_token("your_token")
+   ```
+3. Or persist it across sessions — add to `.Renviron` (open with `usethis::edit_r_environ()`):
+   ```
+   LIFX_TOKEN=your_token
+   ```
 
 ### 2. Spotify credentials
 
-#### 2a. Spotify Developer Dashboard
+> **Important**: Spotify blocked `localhost` in redirect URIs in April 2025. You must register `http://127.0.0.1:1410/` instead.
 
-1. Open your app at <https://developer.spotify.com/dashboard>.
-2. Go to **Edit Settings → Redirect URIs**.
-3. Add exactly: `http://127.0.0.1:1410/` (with trailing slash).
+**2a.** In the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard):
 
-> **Why?** Spotify banned the hostname `localhost` in redirect URIs in April 2025. The R `httr` package listens on port 1410 by default; it must be reached via the IP literal `127.0.0.1`, not the string `localhost`.
+1. Open (or create) your app → **Edit Settings → Redirect URIs**.
+2. Add exactly: `http://127.0.0.1:1410/` — with the trailing slash.
+3. Save.
 
-#### 2b. R credentials
-
-Add your app's Client ID and Secret to `.Renviron` (open with `usethis::edit_r_environ()`):
+**2b.** In your R session, set your Client ID and Secret — either via `Sys.setenv()` or in `.Renviron`:
 
 ```
 SPOTIFY_CLIENT_ID=your_client_id
 SPOTIFY_CLIENT_SECRET=your_client_secret
 ```
 
-The first time `cue_scene()` is called a browser tab opens for Spotify's consent screen. After you approve, the token (including a refresh token) is cached in `~/.httr-oauth`. All subsequent calls — including across R sessions — are silent and automatic.
+**2c.** The first time you call `cue_scene()`, a browser tab opens for Spotify's consent screen. After you approve, the token (plus its refresh token) is cached in `~/.httr-oauth`. Every later call — including across R sessions — is silent and automatic.
+
+Playback control requires a **Spotify Premium** account and an **active device** (open Spotify on your phone or desktop first).
 
 ### 3. Sound effects
 
-Upload your `.wav` files to a GitHub Release (or any public host), then:
+You need a folder of `.wav` files matching the names in [§ Sound files](#sound-files). Either:
 
 ```r
+# A. Download from a public host (e.g. a GitHub release you've uploaded)
 dnd_download_sounds(
   base_url = "https://github.com/YOUR_USERNAME/dndlights/releases/download/v1.0/"
 )
-```
 
-Or point to an existing folder:
-
-```r
-dnd_set_sounds_dir("~/path/to/sounds")
+# B. Point at an existing folder
+dnd_set_sounds_dir("~/Music/dnd_sounds")
 ```
 
 ### 4. Playlist URIs
 
-Open `R/scenes.R` and replace each `PLACEHOLDER_*` string with the real Spotify URI for that scene. Right-click any playlist in Spotify → Share → Copy Spotify URI.
+Open `R/scenes.R` and replace each `"spotify:playlist:PLACEHOLDER_*"` with the URI of your actual playlist. To get a URI: right-click any playlist in Spotify → Share → Copy Spotify URI.
 
 ---
 
-## RStudio Control Panel
+## The dashboard
 
-Install `shiny` and `miniUI`, then open the addin from the **Addins** menu → *dndlights Control Panel* (or bind it to a keyboard shortcut via Tools → Modify Keyboard Shortcuts).
+`dnd_addin()` opens an interactive panel in the RStudio Viewer pane. Three tabs, organised by category, with one-click buttons for every function.
 
 ```r
 install.packages(c("shiny", "miniUI"))
 ```
 
-The panel opens in the Viewer pane with three tabs — **Scenes**, **Spells**, and **Effects** — and a status bar showing the currently active scene colour. Clicking any button calls the corresponding function directly in your R session.
+Launch it from the RStudio **Addins** menu → *dndlights Control Panel*, or bind it to a keyboard shortcut (Tools → Modify Keyboard Shortcuts → Keyboard Shortcuts).
+
+A status bar at the top shows which scene is currently active.
 
 ---
 
-## Scene control
+## Scenes
 
-`cue_scene()` sets the room lighting and starts a Spotify playlist. All subsequent spell and effect functions will revert to that scene's colour when they finish.
+`cue_scene()` sets the room lighting and starts a Spotify playlist. The scene's colour becomes the new "home" — all subsequent spells and effects revert to it.
 
 ```r
-cue_scene("ballroom")    # elegant candlelit gold
-cue_scene("combat_1")    # same lighting, combat playlist
-cue_scene("ironbottom_neutral")  # harsh desert midday sun
+cue_scene("ballroom")           # elegant candlelit gold
+cue_scene("combat_1")           # same lighting, combat playlist
+cue_scene("ironbottom_neutral") # harsh desert midday sun
 ```
+
+### Indoor locations
 
 | Scene | Description | Colour |
 |---|---|---|
 | `dueling_club` | Abandoned warehouse arena | Amber gas-lamp `#C87820` @ 30% |
 | `noble_house` | Estate office | Oil-lamp gold `#D4961E` @ 28% |
 | `detective_office` | Noir detective's office | Single lamp amber `#E8A000` @ 12% |
-| `curio_shop` | Magical antique shop | Aged-gold `#BFA030` @ 22% |
+| `curio_shop` | Magical antique shop | Aged green-gold `#A8B040` @ 30% |
 | `newspaper` | Newspaper press room | Bright work-lamp `#FFDA80` @ 70% |
-| `ironbottom_riots` | Canyon floor at dawn | Desert orange `#E88C14` @ 50% |
-| `ironbottom_neutral` | Canyon floor at noon | Blinding desert sun `#FFE060` @ 85% |
-| `ironbottom_night` | Canyon floor at night | Torch fire `#B04808` @ 18% |
 | `tavern` | Working-class tavern | Warm amber `#CC7820` @ 40% |
 | `ballroom` | Aristocratic ballroom | Golden candlelight `#E8C030` @ 38% |
-| `combat_1` | Ballroom — combat | Same as `ballroom` |
+
+### Outdoor & depths
+
+| Scene | Description | Colour |
+|---|---|---|
+| `ironbottom_riots` | Canyon at dawn | Desert orange `#E88C14` @ 50% |
+| `ironbottom_neutral` | Canyon at noon | Blinding desert sun `#FFE060` @ 85% |
+| `ironbottom_night` | Canyon at night | Torch fire `#B04808` @ 18% |
 | `mine` | Mine with glowing mushrooms | Purple bioluminescence `#7800CC` @ 8% |
-| `combat_2` | Mine — combat | Same as `mine` |
 | `factory` | Molten-metal factory | Orange-red `#E84A00` @ 60% |
+| `dream_sequence` | Fire, ash, blood-red sun | Deep crimson `#C01800` @ 22% |
+
+### Combat & outcome
+
+| Scene | Description | Colour |
+|---|---|---|
+| `combat_1` | Ballroom — combat | Same as `ballroom` |
+| `combat_2` | Mine — combat | Same as `mine` |
 | `combat_3` | Factory — combat | Same as `factory` |
 | `combat_4` | Bridge over canyon at noon | Same as `ironbottom_neutral` |
 | `victory` | Canyon bridge — victory | Same as `combat_4` |
-| `dream_sequence` | Fire, ash, blood-red sun | Deep crimson `#C01800` @ 22% |
+
+### Ambient
+
+| Scene | Description | Colour |
+|---|---|---|
 | `base_1` | Neutral outdoor desert | Warm afternoon `#FFB040` @ 55% |
 | `base_2` | Neutral indoor | Warm lamp `#D49020` @ 35% |
-| `base_3` | Same as `base_1` — alt playlist | |
-| `base_4` | Same as `base_2` — alt playlist | |
+| `base_3` | Same as `base_1`, alt playlist | |
+| `base_4` | Same as `base_2`, alt playlist | |
 
 ---
 
 ## Spells
 
-Each spell plays a sound file and runs a light sequence. French voice-command triggers are noted — they are chosen to be uncommon in casual English table conversation.
+Each spell plays a sound, runs a smooth light sequence, then reverts to the active scene. French voice triggers are chosen to be **phonetically distinct from English D&D table chatter** — see [§ Voice control](#voice-control) below for why this matters.
 
-### Original spells
+### Offensive
 
 | Function | Spell | French trigger |
 |---|---|---|
 | `fireball()` | Fireball | *Boule de feu* |
-| `eldritch_blast()` | Eldritch Blast | *Arcane* |
+| `eldritch_blast()` | Eldritch Blast | *Funeste* |
 | `ice_knife()` | Ice Knife | *Givre* |
-| `shield()` | Shield | *Bouclier* |
 | `lightning_bolt()` | Lightning Bolt | *Foudre* |
-| `cure_wounds()` | Cure Wounds | *Guérison* |
 | `firebolt()` | Firebolt | *Étincelle* |
-| `prestidigitation()` | Prestidigitation | *Prestidigitation* |
-| `water_whip()` | Water Whip | *Fouet* |
-| `magic_missile()` | Magic Missile | *Missile* |
+| `magic_missile()` | Magic Missile | *Carreau* |
+| `acid_splash()` | Acid Splash | *Acerbe* |
+| `ray_of_frost()` | Ray of Frost | *Verglas* |
+| `booming_blade()` | Booming Blade | *Grondement* |
 
-### Expanded spells
+### Elemental
 
 | Function | Spell | French trigger |
 |---|---|---|
-| `light()` | Light | *Lueur* |
-| `mage_armor()` | Mage Armor | *Égide* |
-| `misty_step()` | Misty Step | *Brume* |
-| `private_sanctum()` | Mordenkainen's Private Sanctum | *Citadelle* |
-| `booming_blade()` | Booming Blade | *Grondement* |
-| `disguise_self()` | Disguise Self | *Mascarade* |
-| `haste()` | Haste | *Véloce* |
-| `acid_splash()` | Acid Splash | *Vitriol* |
+| `water_whip()` | Water Whip | *Fouet* |
 | `heat_metal()` | Heat Metal | *Brasier* |
-| `faerie_fire()` | Faerie Fire | *Féerie* |
-| `ray_of_frost()` | Ray of Frost | *Verglas* |
 | `wall_of_fire()` | Wall of Fire | *Fournaise* |
+| `faerie_fire()` | Faerie Fire | *Féerie* |
+
+### Necrotic
+
+| Function | Spell | French trigger |
+|---|---|---|
+| `blight()` | Blight | *Flétrissure* |
 | `finger_of_death()` | Finger of Death | *Trépas* |
 | `disintegrate()` | Disintegrate | *Néant* |
-| `blight()` | Blight | *Flétrissure* |
+
+### Healing & support
+
+| Function | Spell | French trigger |
+|---|---|---|
+| `cure_wounds()` | Cure Wounds | *Guérison* |
 | `mass_healing_word()` | Mass Healing Word | *Cantique* |
+| `haste()` | Haste | *Véloce* |
+| `light()` | Light | *Lueur* |
+
+### Defense
+
+| Function | Spell | French trigger |
+|---|---|---|
+| `shield()` | Shield | *Bouclier* |
+| `mage_armor()` | Mage Armor | *Égide* |
+| `private_sanctum()` | Mordenkainen's Private Sanctum | *Citadelle* |
+
+### Utility
+
+| Function | Spell | French trigger |
+|---|---|---|
+| `prestidigitation()` | Prestidigitation | *Sortilège* |
+| `disguise_self()` | Disguise Self | *Frimousse* |
+| `misty_step()` | Misty Step | *Brume* |
 
 ---
 
-## Non-spell effects
+## Effects
 
-Environmental and creature events. No voice-command trigger words — call these directly from a hotkey or script.
+### PC combat
+
+Voice-bindable like spells. Triggers are historical French battle commands.
+
+| Function | Effect | French trigger |
+|---|---|---|
+| `arcane_shot()` | Arcane rifle firing | *Décharge* |
+| `wild_shape()` | Druidic transformation into a beast | *Sauvagine* |
+| `bludgeon()` | Bludgeoning impact frame | *Boutez* |
+| `slash()` | Slashing impact frame | *Taillade* |
+| `pierce()` | Piercing impact frame | *Estoc* |
+
+### Creatures
+
+No voice triggers — bind to hotkeys or call manually as the DM.
+
+| Function | Effect |
+|---|---|
+| `spider_bite()` | Spider bite with green poison flash |
+| `worm_surge()` | Giant worm erupting from the ground |
+| `crystal_breath()` | Dragon crystal breath weapon |
+| `dragon_bite()` | Dragon bite |
+
+### Magical & environmental
 
 | Function | Effect |
 |---|---|
 | `hammer_slam()` | Magical electric-blue hammer impact |
-| `arcane_shot()` | Arcane rifle firing |
+| `arcane_surge()` | Massive metallic arcane energy release |
 | `ignite()` | Small combustion burst |
 | `gust()` | Rush of wind |
-| `wild_shape()` | Druidic Wildshape transformation |
-| `spider_bite()` | Spider bite with green poison flash |
-| `worm_surge()` | Giant worm erupting from the ground |
-| `spore_burst()` | Release of bright purple spores |
-| `flask_shatter()` | Alchemical flask shattering |
-| `steam_blast()` | Pressurised steam blast |
-| `crystal_breath()` | Dragon crystal breath weapon |
-| `dragon_bite()` | Dragon bite |
-| `arcane_surge()` | Massive metallic arcane energy release |
 | `sand_blast()` | Blast of sand |
-| `bludgeon()` | Bludgeoning damage impact |
-| `slash()` | Slashing damage impact |
-| `pierce()` | Piercing damage impact |
+| `steam_blast()` | Pressurised steam blast |
+| `spore_burst()` | Release of bright spores |
+| `flask_shatter()` | Alchemical flask shattering |
 
 ---
 
-## Sound file reference
+## Voice control
 
-All expected filenames for `dnd_download_sounds()`:
+French voice triggers solve a real problem at the table: if you bind hotwords to English spell names ("fireball", "lightning"), they fire constantly during normal play. The French triggers are deliberately chosen so that **nothing said in English at a D&D table will phonetically trigger them**.
 
-**Spells (original)**
-`fireball.wav` · `eldritch_blast.wav` · `ice_knife.wav` · `shield.wav` · `lightning_bolt.wav` · `cure_wounds.wav` · `firebolt.wav` · `prestidigitation.wav` · `water_whip.wav` · `magic_missile.wav`
-
-**Spells (expanded)**
-`light.wav` · `mage_armor.wav` · `misty_step.wav` · `private_sanctum.wav` · `booming_blade.wav` · `disguise_self.wav` · `haste.wav` · `acid_splash.wav` · `heat_metal.wav` · `faerie_fire.wav` · `ray_of_frost.wav` · `wall_of_fire.wav` · `finger_of_death.wav` · `disintegrate.wav` · `blight.wav` · `mass_healing_word.wav`
-
-**Non-spell effects**
-`hammer_slam.wav` · `arcane_shot.wav` · `ignite.wav` · `gust.wav` · `wild_shape.wav` · `spider_bite.wav` · `worm_surge.wav` · `spore_burst.wav` · `flask_shatter.wav` · `steam_blast.wav` · `crystal_breath.wav` · `dragon_bite.wav` · `arcane_surge.wav` · `sand_blast.wav` · `bludgeon.wav` · `slash.wav` · `pierce.wav`
-
----
-
-## Voice control setup
-
-Bind French trigger words to R function calls using a hotword engine (e.g. Whisper, any push-to-talk macro tool). Non-spell effects have no trigger words and are intended for direct hotkey binding.
+Bind each trigger word to its R function using a hotword engine (Whisper, Picovoice, push-to-talk macros, etc.).
 
 ---
 
@@ -229,25 +284,47 @@ Bind French trigger words to R function calls using a hotword engine (e.g. Whisp
 
 1. Add a `.wav` file to your sounds directory.
 2. Copy any existing function from `R/spells.R` or `R/effects.R` as a template.
-3. Adjust the colour sequence and durations.
-4. Re-run `devtools::document()` to update `NAMESPACE`, or add the export manually.
+3. Adjust the colour sequence and durations. (Tip: keep brightness/hue jumps gradual — see existing spells for tuning.)
+4. Add a voice trigger comment if you want one.
+5. Re-run `devtools::document()` to update `NAMESPACE`, or add the export manually.
+6. Add a button by appending the function name to the appropriate group in `R/addin.R`.
+
+---
+
+## Sound files
+
+All expected filenames for `dnd_download_sounds()`. Group order matches the dashboard.
+
+**Spells**
+`fireball.wav` · `eldritch_blast.wav` · `ice_knife.wav` · `lightning_bolt.wav` · `firebolt.wav` · `magic_missile.wav` · `acid_splash.wav` · `ray_of_frost.wav` · `booming_blade.wav` · `water_whip.wav` · `heat_metal.wav` · `wall_of_fire.wav` · `faerie_fire.wav` · `blight.wav` · `finger_of_death.wav` · `disintegrate.wav` · `cure_wounds.wav` · `mass_healing_word.wav` · `haste.wav` · `light.wav` · `shield.wav` · `mage_armor.wav` · `private_sanctum.wav` · `prestidigitation.wav` · `disguise_self.wav` · `misty_step.wav`
+
+**Effects — PC combat**
+`arcane_shot.wav` · `wild_shape.wav` · `bludgeon.wav` · `slash.wav` · `pierce.wav`
+
+**Effects — creatures**
+`spider_bite.wav` · `worm_surge.wav` · `crystal_breath.wav` · `dragon_bite.wav`
+
+**Effects — magical & environmental**
+`hammer_slam.wav` · `arcane_surge.wav` · `ignite.wav` · `gust.wav` · `sand_blast.wav` · `steam_blast.wav` · `spore_burst.wav` · `flask_shatter.wav`
 
 ---
 
 ## Dependencies
 
+**Imports** (required):
 - [`lifx`](https://cran.r-project.org/package=lifx) — LIFX API wrapper
-- [`httr`](https://cran.r-project.org/package=httr) — Spotify API calls
-- [`jsonlite`](https://cran.r-project.org/package=jsonlite) — JSON serialisation
+- [`httr`](https://cran.r-project.org/package=httr) — Spotify OAuth + playback API calls
 - `tools` — base R, for the user data directory
 
-Suggested:
-- [`spotifyr`](https://cran.r-project.org/package=spotifyr) — recommended for Spotify OAuth token management
+**Suggests** (only if you use specific features):
+- [`shiny`](https://cran.r-project.org/package=shiny) + [`miniUI`](https://cran.r-project.org/package=miniUI) — the RStudio dashboard
+- [`spotifyr`](https://cran.r-project.org/package=spotifyr) — optional helper for inspecting Spotify data outside the package
+- [`usethis`](https://cran.r-project.org/package=usethis) — `edit_r_environ()` helper
 
-Audio playback uses:
-- **macOS**: `afplay` (built-in)
-- **Linux**: `paplay` / `aplay`
-- **Windows**: PowerShell `System.Media.SoundPlayer`
+Audio playback uses your OS's built-in player:
+- **macOS** — `afplay`
+- **Linux** — `paplay` (falls back to `aplay`)
+- **Windows** — PowerShell `System.Media.SoundPlayer`
 
 ---
 

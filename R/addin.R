@@ -92,19 +92,21 @@ dnd_addin <- function() {
   spells_utility   <- c("prestidigitation", "disguise_self", "misty_step")
 
   # Effects --------------------------------------------------------------
-  effects_physical  <- c("bludgeon", "slash", "pierce")
+  effects_pc_combat <- c(
+    "arcane_shot", "wild_shape", "bludgeon", "slash", "pierce"
+  )
   effects_creatures <- c(
-    "spider_bite", "dragon_bite", "worm_surge", "crystal_breath", "wild_shape"
+    "spider_bite", "dragon_bite", "worm_surge", "crystal_breath"
   )
   effects_magical <- c(
-    "hammer_slam", "arcane_shot", "arcane_surge", "ignite",
+    "hammer_slam", "arcane_surge", "ignite",
     "gust", "sand_blast", "steam_blast", "spore_burst", "flask_shatter"
   )
 
   # Darkened scene colours — readable with white text
   SCENE_BG <- c(
     dueling_club       = "#7A4A10", noble_house        = "#8B5E10",
-    detective_office   = "#6B4A00", curio_shop         = "#6A5510",
+    detective_office   = "#6B4A00", curio_shop         = "#5A6520",
     newspaper          = "#7A6030", ironbottom_riots   = "#8B5C0A",
     ironbottom_neutral = "#7A6500", ironbottom_night   = "#6B3005",
     tavern             = "#8B5010", ballroom           = "#8B7518",
@@ -206,9 +208,9 @@ dnd_addin <- function() {
       miniUI::miniTabPanel(
         "Effects", icon = shiny::icon("bolt"),
         miniUI::miniContentPanel(
-          sec_head("Physical"),
-          btn_grid(lapply(effects_physical, function(s)
-            panel_btn(paste0("ef_", s), pretty_label(s), bg = "#4A2A10")
+          sec_head("PC Combat"),
+          btn_grid(lapply(effects_pc_combat, function(s)
+            panel_btn(paste0("ef_", s), pretty_label(s), bg = "#5A2A2A")
           )),
           sec_head("Creatures"),
           btn_grid(lapply(effects_creatures, function(s)
@@ -268,7 +270,7 @@ dnd_addin <- function() {
     }
 
     # Effect buttons
-    all_effects <- c(effects_physical, effects_creatures, effects_magical)
+    all_effects <- c(effects_pc_combat, effects_creatures, effects_magical)
     for (ef in all_effects) {
       local({
         fn_name <- ef
