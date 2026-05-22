@@ -14,11 +14,11 @@ RoxygenNote: 7.3.1
 Imports:
     httr,
     lifx,
-    spotifyr,
     tools
 Suggests:
     miniUI,
     shiny,
+    spotifyr,
     usethis
 URL: https://github.com/YOUR_USERNAME/dndlights
 BugReports: https://github.com/YOUR_USERNAME/dndlights/issues

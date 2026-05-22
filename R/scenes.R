@@ -164,21 +164,38 @@
 )
 
 
-# Internal: start a playlist, disable shuffle, and loop the context.
+# Internal: obtain a cached Spotify OAuth2 token with playback scope.
 #
-# Uses the Authorization Code flow (get_spotify_authorization_code) so the
-# token carries the user-modify-playback-state scope that the player endpoints
-# require.  The OAuth2 token is cached to ~/.httr-oauth by httr, so the
-# browser consent page only appears on the very first call; subsequent calls
-# silently reuse/refresh the cached token.
+# Spotify banned the hostname "localhost" in redirect URIs in April 2025 —
+# httr's default (http://localhost:1410/) now always returns "Insecure".
+# We bypass spotifyr and call httr directly, using the loopback IP literal
+# (http://127.0.0.1:1410/) which Spotify still permits.
 #
-# Client Credentials (get_spotify_access_token) deliberately NOT used here:
-# those tokens are for public data only and will always 401/403 on /me/ routes.
-.spotify_cue_playlist <- function(playlist_uri) {
-  tok <- spotifyr::get_spotify_authorization_code(
+# Register http://127.0.0.1:1410/ in your Spotify app's Dashboard under
+# "Redirect URIs" before the first call.
+#
+# The token is cached in ~/.httr-oauth; the browser only opens once per
+# machine (or until the cache is deleted).
+.spotify_token <- function() {
+  httr::oauth2.0_token(
+    endpoint = httr::oauth_endpoint(
+      authorize = "https://accounts.spotify.com/authorize",
+      access    = "https://accounts.spotify.com/api/token"
+    ),
+    app = httr::oauth_app(
+      appname      = "dndlights",
+      key          = Sys.getenv("SPOTIFY_CLIENT_ID"),
+      secret       = Sys.getenv("SPOTIFY_CLIENT_SECRET"),
+      redirect_uri = "http://127.0.0.1:1410/"
+    ),
     scope = "user-modify-playback-state"
   )
-  cfg <- httr::config(token = tok)
+}
+
+
+# Internal: start a playlist, disable shuffle, and loop the context.
+.spotify_cue_playlist <- function(playlist_uri) {
+  cfg <- httr::config(token = .spotify_token())
 
   resp <- httr::PUT(
     "https://api.spotify.com/v1/me/player/play",
