@@ -165,32 +165,42 @@
 
 
 # Internal: start a playlist, disable shuffle, and loop the context.
-# Uses spotifyr::get_spotify_access_token() for the token (reads
-# SPOTIFY_CLIENT_ID / SPOTIFY_CLIENT_SECRET from the environment), then makes
-# raw httr calls to avoid a bug in spotifyr::start_my_playback where I(NULL)
-# crashes when the uris argument is not supplied.
+#
+# Uses the Authorization Code flow (get_spotify_authorization_code) so the
+# token carries the user-modify-playback-state scope that the player endpoints
+# require.  The OAuth2 token is cached to ~/.httr-oauth by httr, so the
+# browser consent page only appears on the very first call; subsequent calls
+# silently reuse/refresh the cached token.
+#
+# Client Credentials (get_spotify_access_token) deliberately NOT used here:
+# those tokens are for public data only and will always 401/403 on /me/ routes.
 .spotify_cue_playlist <- function(playlist_uri) {
-  token <- spotifyr::get_spotify_access_token()
-  auth  <- httr::add_headers(Authorization = paste("Bearer", token))
+  tok <- spotifyr::get_spotify_authorization_code(
+    scope = "user-modify-playback-state"
+  )
+  cfg <- httr::config(token = tok)
 
-  httr::PUT(
+  resp <- httr::PUT(
     "https://api.spotify.com/v1/me/player/play",
-    auth,
+    cfg,
     body   = list(context_uri = playlist_uri),
     encode = "json"
   )
+  httr::warn_for_status(resp)
 
-  httr::PUT(
+  resp <- httr::PUT(
     "https://api.spotify.com/v1/me/player/shuffle",
-    auth,
+    cfg,
     query = list(state = "false")
   )
+  httr::warn_for_status(resp)
 
-  httr::PUT(
+  resp <- httr::PUT(
     "https://api.spotify.com/v1/me/player/repeat",
-    auth,
+    cfg,
     query = list(state = "context")
   )
+  httr::warn_for_status(resp)
 
   invisible(NULL)
 }
@@ -210,8 +220,13 @@
 #' when they finish (via [revert_state()]).
 #'
 #' Requires `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET` to be set in your
-#' environment (e.g. via `Sys.setenv()` or `.Renviron`) so that
-#' `spotifyr::get_spotify_access_token()` can authenticate.
+#' environment (`.Renviron` or `Sys.setenv()`).  On the **first** call a
+#' browser tab opens for Spotify's OAuth consent screen; after you approve,
+#' the token is cached in `~/.httr-oauth` and all subsequent calls are silent.
+#' The token carries the `user-modify-playback-state` scope, which is required
+#' for the player endpoints — the Client Credentials flow used by
+#' `get_spotify_access_token()` does **not** have this scope and will always
+#' fail silently on these endpoints.
 #'
 #' Edit the playlist URI placeholders in `R/scenes.R` (`.scene_defs`) to point
 #' to your actual Spotify playlists before use.

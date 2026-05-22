@@ -46,20 +46,16 @@ LIFX_TOKEN=your_lifx_token_here
 
 ### 2. Spotify credentials
 
-`cue_scene()` uses `spotifyr` to authenticate. Set your app credentials in `.Renviron` (open with `usethis::edit_r_environ()`):
+Playback control requires the **Authorization Code** OAuth flow (not Client Credentials — those tokens lack the `user-modify-playback-state` scope and will be silently rejected by Spotify's player endpoints).
+
+Add your app credentials to `.Renviron` (open with `usethis::edit_r_environ()`):
 
 ```
 SPOTIFY_CLIENT_ID=your_client_id
 SPOTIFY_CLIENT_SECRET=your_client_secret
 ```
 
-Then in your R session:
-
-```r
-access_token <- spotifyr::get_spotify_access_token()
-```
-
-`cue_scene()` calls this internally each time it starts a playlist, so no manual token-passing is needed.
+The first time `cue_scene()` is called it will open a browser tab for Spotify's consent screen. After you approve, the token is cached in `~/.httr-oauth` and all subsequent calls — including across R sessions — are silent. No manual token-passing is needed.
 
 ### 3. Sound effects
 
