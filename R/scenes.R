@@ -37,10 +37,10 @@
     playlist = "spotify:playlist:PLACEHOLDER_DETECTIVE_OFFICE"
   ),
 
-  # Cramped shelves of ancient relics lit by low aged-gold oil lamps;
-  # warm but slightly dim, as if the light itself is old.
+  # Cramped shelves of ancient relics lit by lamps with a hint of green
+  # patina; warm-green and slightly brighter, as if the light has aged.
   curio_shop = list(
-    color = "#BFA030", brightness = 0.22,
+    color = "#A8B040", brightness = 0.30,
     playlist = "spotify:playlist:PLACEHOLDER_CURIO_SHOP"
   ),
 
