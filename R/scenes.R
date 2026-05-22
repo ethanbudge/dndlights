@@ -165,13 +165,33 @@
 
 
 # Internal: start a playlist, disable shuffle, and loop the context.
-# Requires SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET to be set in the
-# environment. On first use spotifyr will open a browser for OAuth consent;
-# after that the token is cached for the session.
+# Uses spotifyr::get_spotify_access_token() for the token (reads
+# SPOTIFY_CLIENT_ID / SPOTIFY_CLIENT_SECRET from the environment), then makes
+# raw httr calls to avoid a bug in spotifyr::start_my_playback where I(NULL)
+# crashes when the uris argument is not supplied.
 .spotify_cue_playlist <- function(playlist_uri) {
-  spotifyr::start_my_playback(context_uri = playlist_uri)
-  spotifyr::toggle_my_shuffle(state = FALSE)
-  spotifyr::set_my_repeat_mode(state = "context")
+  token <- spotifyr::get_spotify_access_token()
+  auth  <- httr::add_headers(Authorization = paste("Bearer", token))
+
+  httr::PUT(
+    "https://api.spotify.com/v1/me/player/play",
+    auth,
+    body   = list(context_uri = playlist_uri),
+    encode = "json"
+  )
+
+  httr::PUT(
+    "https://api.spotify.com/v1/me/player/shuffle",
+    auth,
+    query = list(state = "false")
+  )
+
+  httr::PUT(
+    "https://api.spotify.com/v1/me/player/repeat",
+    auth,
+    query = list(state = "context")
+  )
+
   invisible(NULL)
 }
 
