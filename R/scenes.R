@@ -164,30 +164,14 @@
 )
 
 
-# Internal: start a playlist from its first track, disable shuffle,
-# and set repeat mode to 'context' (loops the whole playlist).
+# Internal: start a playlist, disable shuffle, and loop the context.
 # Requires SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET to be set in the
-# environment so spotifyr::get_spotify_access_token() can authenticate.
+# environment. On first use spotifyr will open a browser for OAuth consent;
+# after that the token is cached for the session.
 .spotify_cue_playlist <- function(playlist_uri) {
-  token <- spotifyr::get_spotify_access_token()
-
-  spotifyr::start_my_playback(
-    context_uri   = playlist_uri,
-    offset        = list(position = 0L),
-    position_ms   = 0L,
-    authorization = token
-  )
-
-  spotifyr::toggle_my_shuffle(
-    state         = FALSE,
-    authorization = token
-  )
-
-  spotifyr::set_my_repeat_mode(
-    state         = "context",
-    authorization = token
-  )
-
+  spotifyr::start_my_playback(context_uri = playlist_uri)
+  spotifyr::toggle_my_shuffle(state = FALSE)
+  spotifyr::set_my_repeat_mode(state = "context")
   invisible(NULL)
 }
 
