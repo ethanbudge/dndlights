@@ -173,8 +173,7 @@
 
   spotifyr::start_my_playback(
     context_uri   = playlist_uri,
-    offset        = list(position = 0L),
-    position_ms   = 0L,
+    offset        = 1L,
     authorization = token
   )
 
