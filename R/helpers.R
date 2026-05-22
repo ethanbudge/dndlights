@@ -6,9 +6,8 @@
 # Updated by cue_scene(); read by revert_state() so spells return to whatever
 # scene was active rather than a fixed neutral.
 .dnd_env <- new.env(parent = emptyenv())
-.dnd_env$color         <- "#E0D4CC"   # default: warm neutral white
-.dnd_env$brightness    <- 0.10
-.dnd_env$spotify_token <- NULL
+.dnd_env$color      <- "#E0D4CC"   # default: warm neutral white
+.dnd_env$brightness <- 0.10
 
 # ------------------------------------------------------------------------------
 # Internal: resolve sound file path
