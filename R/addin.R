@@ -22,11 +22,12 @@
 #' combos directly via JavaScript, so macOS Voice Control can fire spells
 #' while the panel is open:
 #'
-#' | Keys | Spells |
-#' |------|--------|
+#' | Keys | Functions |
+#' |------|-----------|
 #' | Cmd+Option+1–9 | fireball … booming_blade |
 #' | Cmd+Control+1–9 | water_whip … mass_healing_word |
 #' | Control+Option+1–8 | haste … misty_step |
+#' | Control+Shift+1–5 | arcane_shot … pierce |
 #'
 #' **Concurrency note:** RStudio keyboard shortcuts bound to individual spell
 #' addins (Tools → Modify Keyboard Shortcuts) will *not* fire while the panel
@@ -163,15 +164,20 @@ dnd_addin <- function() {
         #spell-flash.show { opacity: 1; }
       ")),
       shiny::tags$script(shiny::HTML("
-        // Keyboard shortcut maps (Cmd+Option+1-9, Cmd+Ctrl+1-9, Ctrl+Option+1-8)
+        // Keyboard shortcut maps
+        // ⌘⌥1-9 → offensive spells
         var KM_CMD_OPT  = ['fireball','eldritch_blast','ice_knife','lightning_bolt',
                            'firebolt','magic_missile','acid_splash','ray_of_frost',
                            'booming_blade'];
+        // ⌘⌃1-9 → elemental / necrotic / first 2 healing spells
         var KM_CMD_CTRL = ['water_whip','heat_metal','wall_of_fire','faerie_fire',
                            'blight','finger_of_death','disintegrate','cure_wounds',
                            'mass_healing_word'];
+        // ⌃⌥1-8 → remaining healing / defense / utility spells
         var KM_CTRL_OPT = ['haste','light','shield','mage_armor','private_sanctum',
                            'prestidigitation','disguise_self','misty_step'];
+        // ⌃⇧1-5 → PC combat effects
+        var KM_CTRL_SHF = ['arcane_shot','wild_shape','bludgeon','slash','pierce'];
 
         var _flashTimer = null;
         function flashSpell(name) {
@@ -185,14 +191,20 @@ dnd_addin <- function() {
 
         document.addEventListener('keydown', function(e) {
           if (e.repeat) return;
+          // Use e.code (physical key) so Option-modified digits still resolve correctly.
+          // e.key with Option held returns ¡ ™ £ … instead of 1 2 3 …
+          var m = /^Digit([1-9])$/.exec(e.code);
+          if (!m) return;
+          var digit = parseInt(m[1], 10);
           var spell = null;
-          var digit = parseInt(e.key, 10);
-          if (e.metaKey && e.altKey && !e.ctrlKey && digit >= 1 && digit <= 9)
+          if      (e.metaKey && e.altKey  && !e.ctrlKey && !e.shiftKey && digit <= 9)
             spell = KM_CMD_OPT[digit - 1];
-          else if (e.metaKey && e.ctrlKey && !e.altKey && digit >= 1 && digit <= 9)
+          else if (e.metaKey && e.ctrlKey && !e.altKey  && !e.shiftKey && digit <= 9)
             spell = KM_CMD_CTRL[digit - 1];
-          else if (e.ctrlKey && e.altKey && !e.metaKey && digit >= 1 && digit <= 8)
+          else if (e.ctrlKey && e.altKey  && !e.metaKey && !e.shiftKey && digit <= 8)
             spell = KM_CTRL_OPT[digit - 1];
+          else if (e.ctrlKey && e.shiftKey && !e.metaKey && !e.altKey  && digit <= 5)
+            spell = KM_CTRL_SHF[digit - 1];
           if (spell) {
             e.preventDefault();
             flashSpell(spell);
