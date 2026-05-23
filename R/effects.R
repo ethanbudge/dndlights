@@ -37,11 +37,9 @@ arcane_shot <- function() {
   change_light(color_name = "#5C0808", brightness = 0.22, duration = 0.40) # anticipation
   change_light(color_name = "#903030", brightness = 0.45, duration = 0.50) # charging
   change_light(color_name = "#C04040", brightness = 0.68, duration = 0.38) # near-impact
-  change_light(color_name = "#FFE0E0", brightness = 0.98, duration = 0.06) # MUZZLE FLASH
-  change_light(color_name = "#FF2020", brightness = 0.82, duration = 0.12) # slug trail
-  change_light(color_name = "#C81818", brightness = 0.60, duration = 0.12) # impact
-  change_light(color_name = "#800808", brightness = 0.32, duration = 0.30) # deep red
-  change_light(color_name = "#400404", brightness = 0.10, duration = 0.50) # smoke fades
+  change_light(color_name = "#FFE0E0", brightness = 0.98, duration = 0.08) # MUZZLE FLASH
+  change_light(color_name = "#900808", brightness = 0.40, duration = 0.40) # slug trail
+  change_light(color_name = "#400404", brightness = 0.10, duration = 0.60) # smoke fades
 
   revert_state(duration = 2)
 }
@@ -69,9 +67,8 @@ wild_shape <- function() {
   change_light(color_name = "#44A038", brightness = 0.62, duration = 0.40) # surging
   change_light(color_name = "#66CC44", brightness = 0.78, duration = 0.53) # near-impact
   change_light(color_name = "#98FF50", brightness = 0.95, duration = 0.18) # TRANSFORMATION
-  change_light(color_name = "#55CC44", brightness = 0.65, duration = 0.18) # new form
-  change_light(color_name = "#226622", brightness = 0.35, duration = 0.40) # beast complete
-  change_light(color_name = "#112211", brightness = 0.10, duration = 1.20) # primal settle
+  change_light(color_name = "#226622", brightness = 0.38, duration = 0.28) # beast settles
+  change_light(color_name = "#112211", brightness = 0.10, duration = 1.20) # primal hold
 
   revert_state(duration = 3)
 }
@@ -97,9 +94,8 @@ bludgeon <- function() {
   change_light(color_name = "#A8A8A8", brightness = 0.50, duration = 0.30) # white-grey rise
   change_light(color_name = "#C0C0C0", brightness = 0.72, duration = 0.38) # near-impact
   change_light(color_name = "#FF0033", brightness = 0.95, duration = 0.08) # RED IMPACT
-  change_light(color_name = "#CCCCCC", brightness = 0.60, duration = 0.16) # white fadeout
-  change_light(color_name = "#888888", brightness = 0.35, duration = 0.20) # grey settling
-  change_light(color_name = "#404040", brightness = 0.12, duration = 0.40) # back to grey
+  change_light(color_name = "#888888", brightness = 0.38, duration = 0.36) # grey fadeout
+  change_light(color_name = "#383838", brightness = 0.10, duration = 0.50) # settle
 
   revert_state(duration = 1)
 }
@@ -121,12 +117,11 @@ bludgeon <- function() {
 slash <- function() {
   play_sound(.get_sound_path("slash.wav"))
 
-  change_light(color_name = "#888888", brightness = 0.40, duration = 0.02) # grey ready
-  change_light(color_name = "#FFFFFF", brightness = 0.95, duration = 0.04) # STEEL FLASH
-  change_light(color_name = "#FF0033", brightness = 0.98, duration = 0.04) # RED SLASH
-  change_light(color_name = "#EEEEEE", brightness = 0.65, duration = 0.05) # white fadeout
-  change_light(color_name = "#888888", brightness = 0.30, duration = 0.10) # grey settle
-  change_light(color_name = "#383838", brightness = 0.10, duration = 0.30) # quiet grey
+  change_light(color_name = "#888888", brightness = 0.40, duration = 0.04) # grey  # short — peak at 0.06s
+  change_light(color_name = "#FFFFFF", brightness = 0.95, duration = 0.06) # STEEL FLASH
+  change_light(color_name = "#FF0033", brightness = 0.90, duration = 0.08) # RED SLASH
+  change_light(color_name = "#888888", brightness = 0.28, duration = 0.22) # grey settle
+  change_light(color_name = "#383838", brightness = 0.08, duration = 0.45) # quiet
 
   revert_state(duration = 1)
 }
@@ -149,13 +144,12 @@ pierce <- function() {
   play_sound(.get_sound_path("pierce.wav"))
 
   change_light(color_name = "#6A6A6A", brightness = 0.25, duration = 0.40) # grey anticipation
-  change_light(color_name = "#888888", brightness = 0.45, duration = 0.40) # rising
-  change_light(color_name = "#BBBBBB", brightness = 0.65, duration = 0.30) # point gathering
-  change_light(color_name = "#FFFFFF", brightness = 0.92, duration = 0.04) # POINT FLASH
-  change_light(color_name = "#FF0033", brightness = 0.98, duration = 0.06) # RED THRUST
-  change_light(color_name = "#DDDDDD", brightness = 0.55, duration = 0.05) # white fadeout
-  change_light(color_name = "#777777", brightness = 0.25, duration = 0.10) # grey settle
-  change_light(color_name = "#383838", brightness = 0.08, duration = 0.30) # quiet grey
+  change_light(color_name = "#A0A0A0", brightness = 0.55, duration = 0.40) # rising
+  change_light(color_name = "#D0D0D0", brightness = 0.75, duration = 0.34) # point gathering
+  change_light(color_name = "#FFFFFF", brightness = 0.92, duration = 0.08) # POINT FLASH
+  change_light(color_name = "#FF0033", brightness = 0.98, duration = 0.08) # RED THRUST
+  change_light(color_name = "#888888", brightness = 0.28, duration = 0.30) # grey settle
+  change_light(color_name = "#383838", brightness = 0.08, duration = 0.45) # quiet grey
 
   revert_state(duration = 1)
 }
@@ -182,12 +176,10 @@ pierce <- function() {
 spider_bite <- function() {
   play_sound(.get_sound_path("spider_bite.wav"))
 
-  change_light(color_name = "#1A4A0F", brightness = 0.18, duration = 0.10) # shadow strike
-  change_light(color_name = "#226A18", brightness = 0.42, duration = 0.20) # gathering
+  change_light(color_name = "#226A18", brightness = 0.32, duration = 0.30) # shadow gathers
   change_light(color_name = "#44FF00", brightness = 0.85, duration = 0.08) # VENOM PEAK
-  change_light(color_name = "#33CC00", brightness = 0.55, duration = 0.14) # poison spreading
-  change_light(color_name = "#114400", brightness = 0.22, duration = 0.30) # venom courses
-  change_light(color_name = "#081A00", brightness = 0.06, duration = 0.40) # paralysis
+  change_light(color_name = "#114400", brightness = 0.22, duration = 0.42) # poison spreads
+  change_light(color_name = "#081A00", brightness = 0.06, duration = 0.55) # paralysis
 
   revert_state(duration = 2)
 }
@@ -243,15 +235,11 @@ worm_surge <- function() {
 crystal_breath <- function() {
   play_sound(.get_sound_path("crystal_breath.wav"))
 
-  change_light(color_name = "#B0DEEF", brightness = 0.30, duration = 0.10) # crystals form
-  change_light(color_name = "#88CCEE", brightness = 0.55, duration = 0.10) # charging
-  change_light(color_name = "#66DDFF", brightness = 0.78, duration = 0.20) # near-impact
-  change_light(color_name = "#EEFFFF", brightness = 0.98, duration = 0.10) # BARRAGE PEAK
-  change_light(color_name = "#88CCFF", brightness = 0.78, duration = 0.12) # shard pulse 1
-  change_light(color_name = "#66B8E8", brightness = 0.58, duration = 0.18) # shard pulse 2
-  change_light(color_name = "#4499CC", brightness = 0.38, duration = 0.30) # impact shatter
-  change_light(color_name = "#2266AA", brightness = 0.18, duration = 0.40) # splinters
-  change_light(color_name = "#224466", brightness = 0.06, duration = 0.80) # settle
+  change_light(color_name = "#88CCEE", brightness = 0.52, duration = 0.40) # crystals forming
+  change_light(color_name = "#EEFFFF", brightness = 0.98, duration = 0.08) # BARRAGE PEAK
+  change_light(color_name = "#66B8E8", brightness = 0.52, duration = 0.32) # shards settle
+  change_light(color_name = "#2266AA", brightness = 0.20, duration = 0.50) # splinters
+  change_light(color_name = "#224466", brightness = 0.06, duration = 0.90) # stillness
 
   revert_state(duration = 3)
 }
@@ -273,12 +261,10 @@ crystal_breath <- function() {
 dragon_bite <- function() {
   play_sound(.get_sound_path("dragon_bite.wav"))
 
-  change_light(color_name = "#2A0808", brightness = 0.18, duration = 0.02) # jaws descend
+  change_light(color_name = "#2A0808", brightness = 0.20, duration = 0.04) # jaws descend  # short — peak at 0.06s
   change_light(color_name = "#CC3300", brightness = 0.88, duration = 0.06) # RED BITE
-  change_light(color_name = "#880000", brightness = 0.55, duration = 0.10) # tear
-  change_light(color_name = "#550000", brightness = 0.25, duration = 0.20) # wound
-  change_light(color_name = "#330000", brightness = 0.12, duration = 0.30) # blood deepens
-  change_light(color_name = "#1A0000", brightness = 0.06, duration = 0.60) # pain settles
+  change_light(color_name = "#550000", brightness = 0.28, duration = 0.30) # wound deepens
+  change_light(color_name = "#1A0000", brightness = 0.06, duration = 0.65) # pain settles
 
   revert_state(duration = 2)
 }
@@ -310,11 +296,9 @@ hammer_slam <- function() {
   change_light(color_name = "#4488FF", brightness = 0.50, duration = 0.40) # charge builds
   change_light(color_name = "#88BBFF", brightness = 0.72, duration = 0.46) # near-impact
   change_light(color_name = "#DDEEFF", brightness = 0.98, duration = 0.08) # SLAM
-  change_light(color_name = "#AACCFF", brightness = 0.78, duration = 0.16) # pulse 1
-  change_light(color_name = "#2266FF", brightness = 0.60, duration = 0.20) # pulse 2
-  change_light(color_name = "#1144CC", brightness = 0.38, duration = 0.30) # crackling
-  change_light(color_name = "#001888", brightness = 0.18, duration = 0.50) # grounding
-  change_light(color_name = "#000A40", brightness = 0.06, duration = 0.40) # silence
+  change_light(color_name = "#2266FF", brightness = 0.52, duration = 0.36) # shockwave
+  change_light(color_name = "#001888", brightness = 0.18, duration = 0.55) # grounding
+  change_light(color_name = "#000A40", brightness = 0.06, duration = 0.50) # silence
 
   revert_state(duration = 2)
 }
@@ -336,11 +320,10 @@ hammer_slam <- function() {
 ignite <- function() {
   play_sound(.get_sound_path("ignite.wav"))
 
-  change_light(color_name = "#FF6600", brightness = 0.50, duration = 0.04) # combustion spark
-  change_light(color_name = "#FFAA00", brightness = 0.92, duration = 0.06) # BURST PEAK
-  change_light(color_name = "#FF7700", brightness = 0.55, duration = 0.12) # flame blooms
-  change_light(color_name = "#CC2200", brightness = 0.22, duration = 0.30) # smoulder
-  change_light(color_name = "#5A1000", brightness = 0.06, duration = 0.50) # ember fade
+  change_light(color_name = "#FF6600", brightness = 0.55, duration = 0.04) # spark  # short — peak at 0.04s
+  change_light(color_name = "#FFAA00", brightness = 0.92, duration = 0.08) # BURST
+  change_light(color_name = "#CC4400", brightness = 0.35, duration = 0.32) # smoulder
+  change_light(color_name = "#5A1000", brightness = 0.06, duration = 0.55) # ember fade
 
   revert_state(duration = 2)
 }
@@ -421,12 +404,11 @@ spore_burst <- function() {
 flask_shatter <- function() {
   play_sound(.get_sound_path("flask_shatter.wav"))
 
-  change_light(color_name = "#88AA20", brightness = 0.45, duration = 0.04) # glass shatters
-  change_light(color_name = "#CCFF66", brightness = 0.92, duration = 0.06) # REACTION PEAK
-  change_light(color_name = "#AAEE33", brightness = 0.70, duration = 0.10) # spray
-  change_light(color_name = "#88DD00", brightness = 0.45, duration = 0.15) # spreading
-  change_light(color_name = "#446600", brightness = 0.22, duration = 0.25) # fumes
-  change_light(color_name = "#223300", brightness = 0.06, duration = 0.50) # haze
+  change_light(color_name = "#88AA20", brightness = 0.48, duration = 0.04) # glass shatters  # short — peak at 0.10s
+  change_light(color_name = "#CCFF66", brightness = 0.92, duration = 0.08) # REACTION PEAK
+  change_light(color_name = "#88DD00", brightness = 0.45, duration = 0.28) # spray spreads
+  change_light(color_name = "#446600", brightness = 0.20, duration = 0.50) # fumes settle
+  change_light(color_name = "#223300", brightness = 0.06, duration = 0.65) # haze
 
   revert_state(duration = 2)
 }
@@ -449,13 +431,10 @@ flask_shatter <- function() {
 steam_blast <- function() {
   play_sound(.get_sound_path("steam_blast.wav"))
 
-  change_light(color_name = "#C8C8C8", brightness = 0.40, duration = 0.08) # vent builds
-  change_light(color_name = "#E8E8E8", brightness = 0.72, duration = 0.16) # pressure
+  change_light(color_name = "#D8D8D8", brightness = 0.52, duration = 0.24) # vent builds
   change_light(color_name = "#FFFFFF", brightness = 0.95, duration = 0.08) # WHITE BURST
-  change_light(color_name = "#F8F8F8", brightness = 0.85, duration = 0.10) # second pulse
-  change_light(color_name = "#F0F0F0", brightness = 0.62, duration = 0.20) # billowing
-  change_light(color_name = "#DDDDDD", brightness = 0.40, duration = 0.30) # rolling
-  change_light(color_name = "#C8C8C8", brightness = 0.22, duration = 0.50) # thinning
+  change_light(color_name = "#F0F0F0", brightness = 0.60, duration = 0.30) # billowing
+  change_light(color_name = "#C8C8C8", brightness = 0.26, duration = 0.55) # thinning
   change_light(color_name = "#A0A0A0", brightness = 0.08, duration = 0.90) # last wisps
 
   revert_state(duration = 2)
@@ -511,14 +490,11 @@ arcane_surge <- function() {
 sand_blast <- function() {
   play_sound(.get_sound_path("sand_blast.wav"))
 
-  change_light(color_name = "#886020", brightness = 0.30, duration = 0.20) # sand swirls
-  change_light(color_name = "#C08840", brightness = 0.52, duration = 0.14) # building
-  change_light(color_name = "#E8B860", brightness = 0.78, duration = 0.08) # near-impact
+  change_light(color_name = "#886020", brightness = 0.32, duration = 0.22) # sand swirls
+  change_light(color_name = "#C08840", brightness = 0.65, duration = 0.20) # building
   change_light(color_name = "#FFD080", brightness = 0.92, duration = 0.08) # BLAST PEAK
-  change_light(color_name = "#D4A055", brightness = 0.68, duration = 0.14) # sub-peak
-  change_light(color_name = "#C89040", brightness = 0.50, duration = 0.16) # spreading
-  change_light(color_name = "#A07030", brightness = 0.32, duration = 0.30) # cloud settles
-  change_light(color_name = "#704A1A", brightness = 0.10, duration = 0.50) # dust haze
+  change_light(color_name = "#A07030", brightness = 0.38, duration = 0.32) # cloud settles
+  change_light(color_name = "#704A1A", brightness = 0.10, duration = 0.60) # dust haze
 
   revert_state(duration = 2)
 }
