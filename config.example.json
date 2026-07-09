@@ -1,0 +1,10 @@
+{
+  "lifx_token": "your_lifx_personal_access_token",
+  "spotify_client_id": "your_spotify_client_id",
+  "spotify_client_secret": "your_spotify_client_secret",
+  "spotify_redirect_uri": "http://127.0.0.1:1410/",
+  "sounds_dir": "/absolute/path/to/your/wav/files",
+  "vosk_model_dir": "/absolute/path/to/a/vosk/model/for/your/language",
+  "language": "en",
+  "custom_buttons_path": ""
+}

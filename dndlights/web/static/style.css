@@ -1,0 +1,154 @@
+:root {
+  color-scheme: dark;
+  --bg: #14141a;
+  --panel: #1e1e28;
+  --panel-alt: #262632;
+  --text: #eee6f0;
+  --muted: #9a94a8;
+  --accent: #c87820;
+  --accent-2: #7b68ee;
+  --danger: #cc3344;
+  --radius: 8px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+#statusbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  background: var(--panel);
+  border-bottom: 1px solid #000;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.brand { font-weight: 700; letter-spacing: 0.03em; }
+.status { flex: 1; color: var(--muted); font-size: 0.9rem; }
+.controls { display: flex; gap: 8px; align-items: center; }
+
+select, input[type=text], input[type=password] {
+  background: var(--panel-alt);
+  color: var(--text);
+  border: 1px solid #3a3a48;
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.listen-btn {
+  border: none;
+  border-radius: 6px;
+  padding: 7px 12px;
+  background: #3a3a48;
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 600;
+}
+.listen-btn.on { background: var(--danger); }
+
+#tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--panel);
+  padding: 0 12px;
+}
+.tab-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  border-bottom: 2px solid transparent;
+}
+.tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
+
+main { padding: 16px; max-width: 960px; margin: 0 auto; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.group-heading {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 18px 0 8px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.cue-btn {
+  background: var(--panel);
+  border: 1px solid #33333f;
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: 10px 8px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 0.85rem;
+  line-height: 1.3;
+  transition: transform 0.05s ease, background 0.15s ease;
+}
+.cue-btn:active { transform: scale(0.96); }
+.cue-btn:hover { background: var(--panel-alt); }
+.cue-btn.flash { background: var(--accent); }
+.cue-btn .trigger {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  margin-top: 3px;
+  font-style: italic;
+}
+.cue-btn.scene-btn { border-left: 4px solid var(--accent); }
+
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 480px;
+  background: var(--panel);
+  padding: 16px;
+  border-radius: var(--radius);
+  margin-top: 12px;
+}
+.settings-form label { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; color: var(--muted); }
+.settings-form button {
+  align-self: flex-start;
+  background: var(--accent-2);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.hint { color: var(--muted); font-size: 0.85rem; }
+
+#toast {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--panel-alt);
+  color: var(--text);
+  padding: 8px 16px;
+  border-radius: 6px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+#toast.show { opacity: 1; }
